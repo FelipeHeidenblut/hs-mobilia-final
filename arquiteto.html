@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Mobília | Portal do Arquiteto</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="module" src="./js/arquiteto.js" defer></script>
+</head>
+<body>
+
+  <header class="site-header" style="position: relative; background-color: var(--color-text); padding: 1.5rem 0;">
+    <div class="container header-inner">
+      <a href="./index.html" class="brand">
+        <span class="brand-text">HS Mobília</span>
+      </a>
+      <nav class="main-nav">
+        <a href="./index.html">Acervo</a>
+        <a href="./arquiteto.html" style="color: var(--color-accent);">Profissionais</a>
+        <a href="./admin.html">Curadoria</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section" style="padding-bottom: 2rem; text-align: center;">
+    <div class="container">
+      <div class="section-title" style="margin-bottom: 2rem;">
+        <span>Acesso Restrito</span>
+        <h2>Portal do Profissional</h2>
+      </div>
+      <p style="max-width: 600px; margin: 0 auto; color: var(--color-text-light);">
+        Acesso exclusivo à nossa biblioteca de blocos 2D e 3D para especificação em seus projetos arquitetônicos e de interiores.
+      </p>
+    </div>
+  </section>
+
+  <main id="conteudo" class="container" style="padding-bottom: 6rem;">
+    
+    <div id="architect-feedback" style="text-align: center; margin-bottom: 2rem; font-size: 0.85rem; letter-spacing: 1px; color: var(--color-accent);"></div>
+
+    <section id="auth-shell" class="auth-shell hidden" style="max-width: 500px; margin: 0 auto;">
+      
+      <div class="auth-tabs" style="display: flex; justify-content: center; gap: 3rem; margin-bottom: 3rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+        <span class="auth-tab is-active" data-auth-tab="login" style="cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;">Entrar</span>
+        <span class="auth-tab" data-auth-tab="register" style="cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--color-text-light);">Cadastrar</span>
+      </div>
+
+      <div class="auth-panels">
+        <form id="login-form" data-auth-panel="login" style="display: flex; flex-direction: column; gap: 2rem;">
+          <div class="input-group">
+            <label>E-mail Profissional</label>
+            <input type="email" name="email" required />
+          </div>
+          <div class="input-group">
+            <label>Senha</label>
+            <input type="password" name="password" required />
+          </div>
+          <button type="submit" class="btn btn-dark" style="margin-top: 1rem; width: 100%;">Acessar Biblioteca</button>
+        </form>
+
+        <form id="register-form" class="hidden" data-auth-panel="register" style="display: flex; flex-direction: column; gap: 2rem;">
+          <div class="input-group">
+            <label>Nome ou Escritório</label>
+            <input type="text" name="full_name" required />
+          </div>
+          <div class="input-group">
+            <label>E-mail Profissional</label>
+            <input type="email" name="email" required />
+          </div>
+          <div class="input-group">
+            <label>Criar Senha</label>
+            <input type="password" name="password" minlength="6" required />
+          </div>
+          <button type="submit" class="btn btn-dark" style="margin-top: 1rem; width: 100%;">Solicitar Acesso</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="pending-shell" class="hidden" style="text-align: center; max-width: 600px; margin: 4rem auto;">
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--color-accent);">Em Análise</span>
+      <h2 style="font-family: var(--font-secondary); font-weight: 400; font-size: 2rem; margin: 1rem 0;">Seu perfil está sob curadoria</h2>
+      <p style="color: var(--color-text-light); margin-bottom: 2rem;">A equipe avaliará sua solicitação em breve. O acesso aos arquivos técnicos será liberado após a aprovação.</p>
+      <button id="signout-pending" class="btn btn-dark" type="button">Sair</button>
+    </section>
+
+    <section id="rejected-shell" class="hidden" style="text-align: center; max-width: 600px; margin: 4rem auto;">
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #d9534f;">Acesso Indisponível</span>
+      <h2 style="font-family: var(--font-secondary); font-weight: 400; font-size: 2rem; margin: 1rem 0;">Cadastro não aprovado</h2>
+      <p style="color: var(--color-text-light); margin-bottom: 2rem;">Entre em contato com nossa equipe para reavaliar sua afiliação.</p>
+      <button id="signout-rejected" class="btn btn-dark" type="button">Sair</button>
+    </section>
+
+    <section id="approved-shell" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; margin-bottom: 3rem;">
+        <h3 style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.5rem;">Arquivos Técnicos</h3>
+        <button id="signout-approved" class="btn" style="border-color: var(--color-border); color: var(--color-text); padding: 0.5rem 1.5rem; font-size: 0.7rem;" type="button">Encerrar Sessão</button>
+      </div>
+      
+      <div id="architect-products" class="product-grid" aria-live="polite"></div>
+    </section>
+  </main>
+</body>
+</html>

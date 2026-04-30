@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Mobília | Detalhes do Acervo</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="module" src="./js/produto.js" defer></script>
+</head>
+<body>
+
+  <header class="site-header" style="position: relative; background-color: var(--color-text); padding: 1.5rem 0;">
+    <div class="container header-inner">
+      <a href="./index.html" class="brand">
+        <span class="brand-text">HS Mobília</span>
+      </a>
+      <nav class="main-nav">
+        <a href="./index.html" style="color: var(--color-accent);">Acervo</a>
+        <a href="./arquiteto.html">Profissionais</a>
+        <a href="./admin.html">Curadoria</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container" style="padding: 4rem 0 8rem 0;">
+    
+    <a href="./index.html" style="display: inline-block; margin-bottom: 3rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--color-text-light);">
+      ← Voltar à Coleção
+    </a>
+
+    <div id="loading-status" style="text-align:center; font-size: 0.8rem; letter-spacing: 2px;">
+      Carregando detalhes...
+    </div>
+
+    <div id="product-detail-view" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: start;">
+      
+      <div style="background-color: #F0F0F0; aspect-ratio: 4/5; overflow: hidden;">
+        <img id="detail-image" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      
+      <div style="padding-top: 2rem;">
+        <span id="detail-category" style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: var(--color-accent); margin-bottom: 1rem;">Categoria</span>
+        
+        <h1 id="detail-name" style="font-family: var(--font-secondary); font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 400; line-height: 1.1; margin-bottom: 2rem;">Nome da Peça</h1>
+        
+        <div style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); padding: 1.5rem 0; margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-light);">Designer/Marca</span>
+            <strong id="detail-brand" style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.2rem;">Marca</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-light);">Dimensões</span>
+            <span id="detail-dimensions" style="font-size: 0.9rem;">-</span>
+          </div>
+        </div>
+
+        <h3 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Sobre a Peça</h3>
+        <p id="detail-description" style="color: var(--color-text-light); white-space: pre-line; margin-bottom: 3rem;">
+          Sem descrição detalhada disponível.
+        </p>
+
+        <div style="background-color: #F9F9F9; padding: 2rem; border: 1px solid var(--color-border); text-align: center;">
+          <p style="font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 1.5rem;">Para arquivos técnicos (2D/3D) desta peça, acesse a área restrita.</p>
+          <a href="./arquiteto.html" class="btn btn-dark" style="width: 100%;">Portal do Profissional</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Mobília | Alta Decoração</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="module" src="./js/index.js" defer></script>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="./index.html" class="brand">
+        <span class="brand-text">HS Mobília</span>
+      </a>
+      <nav class="main-nav">
+        <a href="./index.html">Acervo</a>
+        <a href="./arquiteto.html">Profissionais</a>
+        <a href="./admin.html">Curadoria</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Onde o design encontra a permanência.</h1>
+      <p>Mobiliário autoral de alto padrão para ambientes que inspiram sofisticação e conforto absoluto.</p>
+      <a href="#acervo" class="btn">Explorar Coleção</a>
+    </div>
+  </section>
+
+  <section class="section categories">
+    <div class="container">
+      <div class="section-title">
+        <span>Navegue por Tipologia</span>
+        <h2>Categorias</h2>
+      </div>
+
+      <div class="category-grid">
+        <a href="#acervo" class="category-item">
+          <div class="category-item__image">
+            <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=800"
+              alt="Assentos">
+          </div>
+          <div class="category-item__label">
+            <h3>Assentos</h3>
+            <span>Poltronas e Cadeiras</span>
+          </div>
+        </a>
+
+        <a href="#acervo" class="category-item">
+          <div class="category-item__image">
+            <img src="https://images.unsplash.com/photo-1577145900570-3c0595399995?auto=format&fit=crop&q=80&w=800"
+              alt="Mesas">
+          </div>
+          <div class="category-item__label">
+            <h3>Mesas</h3>
+            <span>Jantar e Centro</span>
+          </div>
+        </a>
+
+        <a href="#acervo" class="category-item">
+          <div class="category-item__image">
+            <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=800"
+              alt="Armazenamento">
+          </div>
+          <div class="category-item__label">
+            <h3>Armazenamento</h3>
+            <span>Aparadores e Estantes</span>
+          </div>
+        </a>
+
+        <a href="#acervo" class="category-item">
+          <div class="category-item__image">
+            <img src="https://images.unsplash.com/photo-1534349762230-e0cadf78f5db?auto=format&fit=crop&q=80&w=800"
+              alt="Complementos">
+          </div>
+          <div class="category-item__label">
+            <h3>Complementos</h3>
+            <span>Objetos e Iluminação</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <main id="acervo" class="section">
+    <div class="container">
+      <div class="section-title">
+        <span>Coleção Exclusiva</span>
+        <h2>Nosso Acervo</h2>
+      </div>
+
+      <div id="public-status"
+        style="text-align:center; font-size: 0.8rem; letter-spacing: 2px; color: var(--color-text-light); margin-bottom: 2rem;">
+      </div>
+
+      <div id="public-products" class="product-grid" aria-live="polite">
+      </div>
+    </div>
+  </main>
+
+</body>
+
+</html>

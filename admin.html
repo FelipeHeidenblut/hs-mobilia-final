@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Mobília | Gestão de Acervo</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+  <script type="module" src="./js/admin.js" defer></script>
+</head>
+
+<body>
+
+  <header class="site-header" style="position: relative; background-color: var(--color-text); padding: 1.5rem 0;">
+    <div class="container header-inner">
+      <a href="./index.html" class="brand">
+        <span class="brand-text">HS Mobília</span>
+      </a>
+      <nav class="main-nav">
+        <a href="./index.html">Acervo</a>
+        <a href="./arquiteto.html">Profissionais</a>
+        <a href="./admin.html" style="color: var(--color-accent);">Curadoria</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section" style="padding-bottom: 2rem; text-align: center;">
+    <div class="container">
+      <div class="section-title" style="margin-bottom: 1rem;">
+        <span>Backoffice</span>
+        <h2>Gestão do Acervo</h2>
+      </div>
+      <div id="admin-feedback" style="font-size: 0.85rem; letter-spacing: 1px; color: var(--color-accent);">Validando
+        permissões...</div>
+    </div>
+  </section>
+
+  <main id="conteudo" class="container" style="padding-bottom: 6rem;">
+
+    <section id="admin-shell" style="display: grid; gap: 6rem;">
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 4rem;">
+
+        <div>
+          <h3
+            style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; margin-bottom: 2rem;">
+            Adicionar Peça</h3>
+
+          <form id="product-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="input-group">
+              <label>Nome da Peça</label>
+              <input type="text" name="name" required />
+            </div>
+            <div class="input-group">
+              <label>Designer / Marca</label>
+              <input type="text" name="brand" required />
+            </div>
+            <div class="input-group">
+              <label>Categoria</label>
+              <input type="text" name="category" />
+            </div>
+            <div class="input-group">
+              <label>Dimensões</label>
+              <input type="text" name="dimensions" placeholder="Ex: L 90cm x A 75cm x P 80cm" />
+            </div>
+            <div class="input-group">
+              <label>Descrição</label>
+              <textarea name="description" rows="3"
+                placeholder="Detalhes sobre materiais, acabamento e história da peça..."></textarea>
+            </div>
+            <div class="input-group">
+              <label>Fotografia (URL)</label>
+              <input type="url" name="image_url" required />
+            </div>
+            <div class="input-group">
+              <label>Bloco 2D (URL)</label>
+              <input type="url" name="file_2d_url" />
+            </div>
+            <div class="input-group">
+              <label>Bloco 3D (URL)</label>
+              <input type="url" name="file_3d_url" />
+            </div>
+            <button type="submit" class="btn btn-dark" style="margin-top: 1rem;">Salvar no Acervo</button>
+          </form>
+        </div>
+
+        <div>
+          <h3
+            style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; margin-bottom: 2rem;">
+            Importar Lote (CSV)</h3>
+
+          <form id="csv-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="input-group">
+              <label>Arquivo CSV</label>
+              <input type="file" id="csv-file" accept=".csv,text/csv" required
+                style="padding: 1.5rem 0; font-size: 0.8rem; color: var(--color-text-light);" />
+            </div>
+            <div
+              style="background-color: #F9F9F9; padding: 1.5rem; border: 1px solid var(--color-border); font-size: 0.75rem; color: var(--color-text-light);">
+              <strong
+                style="display: block; margin-bottom: 0.5rem; color: var(--color-text); text-transform: uppercase; letter-spacing: 1px;">Cabeçalhos
+                obrigatórios:</strong>
+              <code
+                style="font-family: monospace;">name,brand,category,dimensions,image_url,file_2d_url,file_3d_url</code>
+            </div>
+            <button type="submit" class="btn btn-dark">Processar Arquivo</button>
+          </form>
+        </div>
+      </div>
+
+      <div style="display: grid; gap: 6rem;">
+
+        <div>
+          <h3 style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.5rem; margin-bottom: 2rem;">
+            Inventário Atual</h3>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Peça</th>
+                  <th>Marca/Designer</th>
+                  <th>Categoria</th>
+                  <th>Dimensões</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-family: var(--font-secondary); font-weight: 400; font-size: 1.5rem; margin-bottom: 2rem;">
+            Curadoria de Profissionais</h3>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Profissional / Escritório</th>
+                  <th>E-mail</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="architects-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</body>
+
+</html>

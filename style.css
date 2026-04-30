@@ -1,0 +1,434 @@
+/* =========================================================
+   HS MOBÍLIA - ALTA DECORAÇÃO (NOVO CONCEITO)
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+
+:root {
+  --font-primary: 'Montserrat', sans-serif;
+  --font-secondary: 'Playfair Display', serif;
+
+  /* Paleta Sóbria e Sofisticada */
+  --color-bg: #FAFAFA;        /* Quase branco, traz leveza */
+  --color-text: #222222;      /* Chumbo escuro para leitura confortável */
+  --color-text-light: #777777;
+  --color-accent: #A68B6A;    /* Dourado envelhecido / Tom de madeira */
+  --color-border: #EAEAEA;
+  
+  --transition: all 0.4s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* --- UTILITÁRIOS --- */
+.container {
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section {
+  padding: 6rem 0;
+}
+
+/* --- HEADER FIXO E TRANSPARENTE --- */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF; /* Header branco sobre a imagem */
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-text {
+  font-family: var(--font-secondary);
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.main-nav {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.main-nav a {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 400;
+  transition: var(--transition);
+}
+
+.main-nav a:hover {
+  color: var(--color-accent);
+}
+
+/* --- HERO SECTION (TELA CHEIA) --- */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=2000');
+  background-size: cover;
+  background-position: center;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 800px;
+  padding: 0 2rem;
+}
+
+.hero-content h1 {
+  font-family: var(--font-secondary);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+  margin-bottom: 2.5rem;
+}
+
+/* Botões Estilo Sierra/Milênio */
+.btn {
+  display: inline-block;
+  padding: 1rem 3rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 1px solid #FFFFFF;
+  background: transparent;
+  color: #FFFFFF;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #FFFFFF;
+  color: var(--color-text);
+}
+
+.btn-dark {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.btn-dark:hover {
+  background: var(--color-text);
+  color: #FFFFFF;
+}
+
+/* --- GRADE DE CATEGORIAS --- */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.category-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-align: left;
+}
+
+.category-item__image {
+  aspect-ratio: 1 / 1; /* Imagens quadradas perfeitas */
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.category-item__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(20%); /* Estética levemente dessaturada */
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-item:hover .category-item__image img {
+  transform: scale(1.08);
+}
+
+.category-item__label h3 {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.category-item__label span {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  font-style: italic;
+  font-family: var(--font-secondary);
+}
+
+/* Ajuste Mobile para Categorias */
+@media (max-width: 1024px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- VITRINE DE PRODUTOS (ESTILO REVISTA) --- */
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title h2 {
+  font-family: var(--font-secondary);
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.section-title span {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-accent);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 4rem 2rem;
+}
+
+/* Cartão Invisível */
+.product-card {
+  position: relative;
+  text-align: center;
+}
+
+.product-card__image-wrapper {
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: #F0F0F0; /* Fundo cinza claro para fotos sem fundo */
+  aspect-ratio: 4/5;
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05); /* Zoom suave ao passar o mouse */
+}
+
+.product-card__title {
+  font-family: var(--font-secondary);
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.product-card__meta {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-light);
+}
+
+/* --- FORMULÁRIOS MINIMALISTAS --- */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.input-group label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem 0;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-text);
+  transition: var(--transition);
+  outline: none;
+}
+
+.input-group input:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- BOTÕES DE DOWNLOAD (PORTAL DO ARQUITETO) --- */
+.product-card .btn,
+.product-card__downloads .btn {
+  background-color: var(--color-text); /* Fundo chumbo escuro */
+  color: #FFFFFF !important;           /* Texto branco */
+  border: 1px solid var(--color-text);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.7rem;
+  margin-top: 1rem;
+  width: 100%; /* Faz o botão ocupar a largura do cartão */
+  text-align: center;
+}
+
+.product-card .btn:hover,
+.product-card__downloads .btn:hover {
+  background-color: var(--color-accent); /* Muda pro tom dourado/areia no hover */
+  border-color: var(--color-accent);
+  color: #FFFFFF !important;
+}
+
+/* --- TABELAS DE ADMINISTRAÇÃO --- */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+}
+
+.admin-table td {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.input-group textarea {
+  width: 100%;
+  padding: 0.8rem 0;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-text);
+  transition: var(--transition);
+  outline: none;
+  resize: vertical; /* Permite ao usuário expandir apenas para baixo */
+  min-height: 80px;
+}
+
+.input-group textarea:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+/* Badges de Status (Aprovado, Pendente, etc) */
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 2px;
+}
+
+.status-badge.pending { background-color: #FFF3CD; color: #856404; }
+.status-badge.approved { background-color: #D4EDDA; color: #155724; }
+.status-badge.rejected { background-color: #F8D7DA; color: #721C24; }
+
+/* Botões menores dentro da tabela (ex: Excluir, Aprovar) */
+.admin-table .btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.65rem;
+  margin-right: 0.5rem;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.admin-table .btn:hover {
+  border-color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .main-nav {
+    display: none; /* Em um cenário real, aqui entraria um menu hamburguer */
+  }
+  .section { padding: 4rem 0; }
+}
