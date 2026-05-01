@@ -1,5 +1,5 @@
-import { fetchPublicProducts } from 'supabase.js';
-import { renderPublicProducts } from 'ui.js';
+import { fetchPublicProducts } from './supabase.js';
+import { renderPublicProducts } from './ui.js';
 
 const statusEl = document.getElementById('public-status');
 const gridEl = document.getElementById('public-products');
