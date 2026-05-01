@@ -32,61 +32,6 @@
     </div>
   </section>
 
-  <section class="section categories">
-    <div class="container">
-      <div class="section-title">
-        <span>Navegue por Tipologia</span>
-        <h2>Categorias</h2>
-      </div>
-
-      <div class="category-grid">
-        <a href="#acervo" class="category-item">
-          <div class="category-item__image">
-            <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=800"
-              alt="Assentos">
-          </div>
-          <div class="category-item__label">
-            <h3>Assentos</h3>
-            <span>Poltronas e Cadeiras</span>
-          </div>
-        </a>
-
-        <a href="#acervo" class="category-item">
-          <div class="category-item__image">
-            <img src="https://images.unsplash.com/photo-1577145900570-3c0595399995?auto=format&fit=crop&q=80&w=800"
-              alt="Mesas">
-          </div>
-          <div class="category-item__label">
-            <h3>Mesas</h3>
-            <span>Jantar e Centro</span>
-          </div>
-        </a>
-
-        <a href="#acervo" class="category-item">
-          <div class="category-item__image">
-            <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=800"
-              alt="Armazenamento">
-          </div>
-          <div class="category-item__label">
-            <h3>Armazenamento</h3>
-            <span>Aparadores e Estantes</span>
-          </div>
-        </a>
-
-        <a href="#acervo" class="category-item">
-          <div class="category-item__image">
-            <img src="https://images.unsplash.com/photo-1534349762230-e0cadf78f5db?auto=format&fit=crop&q=80&w=800"
-              alt="Complementos">
-          </div>
-          <div class="category-item__label">
-            <h3>Complementos</h3>
-            <span>Objetos e Iluminação</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
   <main id="acervo" class="section">
     <div class="container">
       <div class="section-title">
@@ -97,6 +42,28 @@
       <div id="public-status"
         style="text-align:center; font-size: 0.8rem; letter-spacing: 2px; color: var(--color-text-light); margin-bottom: 2rem;">
       </div>
+
+      <!-- NOVA BARRA DE FILTROS -->
+      <div class="filter-section">
+        <div class="filter-bar">
+          <div class="filter-group">
+            <select id="filter-category" aria-label="Filtrar por Categoria">
+              <option value="">Todas as Categorias</option>
+              <!-- O JS vai injetar o resto aqui -->
+            </select>
+
+            <select id="filter-brand" aria-label="Filtrar por Marca">
+              <option value="">Todas as Marcas</option>
+              <!-- O JS vai injetar o resto aqui -->
+            </select>
+          </div>
+          
+          <div class="search-group">
+            <input type="text" id="search-input" placeholder="Buscar por nome..." autocomplete="off" />
+          </div>
+        </div>
+      </div>
+      <!-- FIM DA BARRA DE FILTROS -->
 
       <div id="public-products" class="product-grid" aria-live="polite">
       </div>
