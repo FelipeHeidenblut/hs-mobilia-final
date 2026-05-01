@@ -1,5 +1,5 @@
-import { fetchPublicProducts, formatError } from 'supabase.js';
-import { renderPublicProducts, setFeedback, setupThemeToggle } from 'ui.js';
+import { fetchPublicProducts } from './supabase.js';
+import { renderPublicProducts } from './ui.js';
 
 const statusEl = document.getElementById('public-status');
 const gridEl = document.getElementById('public-products');
@@ -13,22 +13,31 @@ const searchInput = document.getElementById('search-input');
 let allProducts = [];
 
 async function init() {
-  if (typeof setupThemeToggle === 'function') setupThemeToggle();
-
   try {
+    statusEl.textContent = 'Carregando acervo...';
+    
     // 1. Busca os dados no Supabase
     allProducts = await fetchPublicProducts();
     
-    // 2. Monta as opções de filtro e mostra tudo
+    if (!allProducts || allProducts.length === 0) {
+        statusEl.textContent = 'O acervo está vazio no momento.';
+        return;
+    }
+
+    // Limpa o aviso de carregamento
+    statusEl.textContent = '';
+    
+    // 2. Monta as opções de filtro e mostra a vitrine
     populateFilters(allProducts);
     renderPublicProducts(gridEl, allProducts);
-    setFeedback(statusEl, '', 'success'); // Limpa a mensagem de carregando
     
-    // 3. Liga os eventos de filtro
+    // 3. Liga os eventos de clique/digitação dos filtros
     setupFilterListeners();
     
   } catch (error) {
-    setFeedback(statusEl, formatError(error), 'error');
+    console.error("Erro ao carregar:", error);
+    statusEl.textContent = 'Erro ao carregar o catálogo. Verifique sua conexão.';
+    statusEl.style.color = '#d9534f'; // Vermelho elegante
   }
 }
 
@@ -37,6 +46,10 @@ function populateFilters(products) {
   // Pega valores únicos e coloca em ordem alfabética
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
   const brands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
+
+  // Limpa as opções antes de preencher para evitar duplicações
+  categorySelect.innerHTML = '<option value="">Todas as Categorias</option>';
+  brandSelect.innerHTML = '<option value="">Todas as Marcas</option>';
 
   categories.forEach(cat => {
     categorySelect.add(new Option(cat, cat));
@@ -71,7 +84,7 @@ function applyFilters() {
   
   // Aviso amigável caso o filtro seja muito específico e não ache nada
   if (filteredProducts.length === 0) {
-    gridEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--color-text-light);">Nenhuma peça encontrada com estes critérios.</p>';
+    gridEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1; margin-top: 3rem; color: var(--color-text-light);">Nenhuma peça encontrada com estes critérios.</p>';
   }
 }
 
