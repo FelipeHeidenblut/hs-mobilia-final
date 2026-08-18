@@ -1,0 +1,385 @@
+.acervo-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* --- Filtros Laterais --- */
+.filter-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  position: sticky;
+  top: 2rem; 
+}
+
+.filter-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group-vertical label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+}
+
+.filter-group-vertical select,
+.filter-group-vertical input {
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  padding: 0.5rem 0;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+
+.filter-group-vertical select:focus,
+.filter-group-vertical input:focus,
+.filter-group-vertical select:hover,
+.filter-group-vertical input:hover {
+  border-bottom-color: var(--color-text);
+}
+
+.filter-group-vertical select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* --- A Grade de Produtos (Sierra Grid) --- */
+.sierra-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4rem 2rem; 
+}
+
+/* O Card do Produto Limpo */
+.product-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.product-card__image-wrapper {
+  aspect-ratio: 3/2;
+  background-color: #F7F7F7; 
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05); 
+}
+
+.product-card__title {
+  font-family: var(--font-secondary);
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0 0 0.3rem 0;
+  color: var(--color-text);
+  transition: color 0.3s ease;
+}
+
+.product-card__meta {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .acervo-layout {
+    grid-template-columns: 1fr; 
+    gap: 3rem;
+  }
+  .filter-sidebar {
+    position: static;
+  }
+  .sierra-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 3rem 1rem;
+  }
+}
+
+/* ==========================================
+   CORREÇÕES ESPECÍFICAS DA PÁGINA ACERVO
+   ========================================== */
+
+/* 1. Transforma o cabeçalho em um menu sólido e escuro para páginas internas */
+.site-header {
+  position: relative; /* Tira o cabeçalho de cima do texto */
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text); /* Deixa a logo escura */
+  padding: 1.5rem 0;
+}
+
+/* Deixa os links do menu escuros */
+.main-nav a {
+  color: var(--color-text);
+}
+
+/* 2. Hero Banner do Acervo (Com imagem de fundo) */
+.hero {
+  /* Imagem de alta decoração com uma leve película escura para o texto branco ler bem */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./imagens/06072026_RIZ3285.webp');
+  background-size: cover;
+  background-position: center;
+  
+  /* Altura menor que a da Home, ideal para páginas internas */
+  height: 45vh; 
+  min-height: 350px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Como o fundo agora é uma foto escura, voltamos o texto para branco */
+.hero-content h1 {
+  font-family: var(--font-primary) !important;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.hero-content h1,
+.hero-content p {
+  color: #FFFFFF !important;
+}
+
+.hero-content h2{
+  font-family: var(--font-secondary) !important;
+  font-size: clamp(1.5rem, 1.25vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #FFFFFF !important;
+}
+
+.hero-content p {
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+/* Botão branco elegante para o fundo escuro */
+.hero .btn {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+  padding: 0.6rem 1.3rem; 
+  font-size: 0.70rem;
+  letter-spacing: 2px; 
+  
+  /* Se o botão estiver esticando sozinho, essas propriedades "travam" o tamanho dele */
+  width: max-content;
+  display: inline-block;
+}
+
+.hero .btn:hover {
+  background: #FFFFFF;
+  color: var(--color-text); /* Fica chumbo quando passa o mouse */
+}
+
+/* 3. Centraliza os nomes dos móveis na vitrine */
+.product-card {
+  text-align: center;
+}
+
+/* ==========================================
+   PAGINAÇÃO DO ACERVO (LIMPA E CENTRALIZADA)
+   ========================================== */
+.pagination {
+  display: flex;
+  justify-content: center; /* Agora isso vai funcionar perfeitamente! */
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 4rem auto 4rem auto; 
+  width: 100%;
+}
+
+/* Mantemos o estilo dos botões */
+.pagination button {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 35px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--color-border);
+}
+
+.pagination button.active {
+  background: var(--color-text);
+  color: #fff;
+  border-color: var(--color-text);
+}
+
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* ==========================================
+   GRID DE TEXTURAS E ACABAMENTOS
+   ========================================== */
+.texture-category-menu {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin: 0 auto 3.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.texture-category-menu button {
+  padding: 0.75rem 1.1rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-light);
+  font-family: var(--font-primary);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.texture-category-menu button span {
+  margin-left: 0.35rem;
+  opacity: 0.65;
+}
+
+.texture-category-menu button:hover,
+.texture-category-menu button.is-active {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: #fff;
+}
+
+.textures-container {
+  display: grid;
+  gap: 3rem 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.textures-container[data-columns="1"] { grid-template-columns: minmax(0, 200px); }
+.textures-container[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 200px)); }
+.textures-container[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 200px)); }
+.textures-container[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 200px)); }
+.textures-container[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 200px)); }
+
+.texture-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.texture-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 0;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.texture-swatch:hover {
+  transform: scale(1.035);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.texture-meta {
+  text-align: center;
+}
+
+.texture-name {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+
+.texture-category {
+  font-size: 0.65rem;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+
+.textures-empty {
+  grid-column: 1 / -1;
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.texture-pagination {
+  margin: 3.5rem auto 0;
+}
+
+@media (max-width: 600px) {
+  .texture-category-menu {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    margin-bottom: 2.5rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .textures-container[data-columns] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 1rem;
+  }
+
+  .textures-container[data-columns="1"] {
+    grid-template-columns: minmax(0, 200px);
+  }
+}

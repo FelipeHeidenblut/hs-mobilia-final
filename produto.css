@@ -1,0 +1,234 @@
+.product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.product-image-wrapper {
+  background: #F7F7F7;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.product-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: sticky;
+  top: 2rem; 
+}
+
+@media (max-width: 900px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .product-info-wrapper {
+    position: static;
+  }
+}
+
+/* ==========================================
+   TIPOGRAFIA E ALINHAMENTO DO PRODUTO
+   ========================================== */
+
+.product-category {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-text-light);
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.product-title {
+  font-family: var(--font-secondary);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+/* Container das Dimensões */
+.product-specs {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem 0;
+}
+
+/* A Mágica do Alinhamento: Label à esquerda, Valor à direita */
+.spec-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2rem;
+}
+
+.spec-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  width: 120px; /* Trava o tamanho do "Dimensões" */
+  flex-shrink: 0; /* Impede de encolher */
+}
+
+.spec-value {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+  flex: 1;
+  white-space: pre-line; /* REESTABELECE AS QUEBRAS DE LINHA DO BANCO DE DADOS */
+  overflow-wrap: break-word; /* SE TIVER UM TEXTO MUITO LONGO SEM ESPAÇO, ELE QUEBRA */
+}
+
+.product-specs--public {
+  padding: 1.25rem 0;
+}
+
+.consultation-text {
+  margin: 0;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+/* Sobre a peça */
+.about-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  line-height: 1.8;
+  color: var(--color-text-light);
+  margin: 0;
+  white-space: pre-line; /* GARANTE QUE A DESCRIÇÃO TAMBÉM RESPEITE QUEBRAS */
+  overflow-wrap: break-word;
+}
+
+.product-description.is-collapsed {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  white-space: normal !important;
+}
+
+.description-toggle {
+  margin-top: 0.75rem;
+  padding: 0 0 0.2rem;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.technical-access-note {
+  margin: 0;
+  color: var(--color-text-light);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================
+   CONTAINER GERAL DA GALERIA (Inclui o Título)
+   ========================================== */
+.gallery-section {
+  margin-top: 6rem; /* O respiro luxuoso que afasta o título dos botões de download */
+  padding-top: 2rem;
+  text-align: center; /* Garante que o texto fique centralizado */
+}
+
+/* ==========================================
+   GALERIA DE IMAGENS DO PRODUTO
+   ========================================== */
+
+/* A Mágica: Grade que deixa as fotos menores e lado a lado */
+.product-gallery {
+  display: grid;
+  /* Cria colunas de no mínimo 250px. Isso força as fotos a ficarem menores e lado a lado */
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); 
+  gap: 2rem;
+  margin-top: 1.20rem; /* Empurra toda a galeria (título e fotos) para longe dos botões */
+  padding-top: 2rem;
+}
+
+/* O container de cada foto individual */
+.product-gallery__item {
+  aspect-ratio: 4/3; /* Garante que todas as fotos fiquem perfeitamente quadradas, estilo Instagram */
+  background-color: var(--color-bg-alt);
+  overflow: hidden;
+}
+
+/* A foto em si preenchendo o quadrado */
+.product-gallery__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-gallery__item:hover img {
+  transform: scale(1.05); /* Zoom elegante ao passar o mouse */
+}
+
+/* Responsividade: Garante que no celular as fotos fiquem boas */
+@media (max-width: 768px) {
+  .product-gallery {
+    grid-template-columns: repeat(2, 1fr); /* 2 fotos por linha no celular */
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-gallery {
+    grid-template-columns: 1fr; /* 1 foto por linha em telas muito pequenas */
+  }
+}
+
+/* ==========================================
+   BOTÕES DE AÇÃO DO PRODUTO (CONTATO / 3D)
+   ========================================== */
+.product-actions {
+  display: flex;
+  gap: 1rem; /* Espaço entre os botões */
+  margin-top: 2.5rem;
+  width: 100%;
+}
+
+.product-actions .btn {
+  flex: 1; /* A MÁGICA: Faz os botões dividirem o espaço igualmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+#product-container p {
+  white-space: pre-line !important;
+}
+
+/* No celular, é melhor um botão em cima do outro ocupando 100% da tela */
+@media (max-width: 768px) {
+  .product-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

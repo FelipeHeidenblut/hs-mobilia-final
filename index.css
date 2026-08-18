@@ -1,0 +1,412 @@
+/* --- HERO SECTION (TELA CHEIA) --- */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  /* MUDANÇA: 'flex-start' alinha o conteúdo à esquerda em vez do centro */
+  justify-content: flex-start; 
+  /* Mantive o seu caminho de imagem exatamente como estava */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.453), rgba(0, 0, 0, 0.505)), url(./imagens/06072026_RIZ3384.webp);
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  /* MUDANÇA: Alinha o texto à esquerda */
+  text-align: left; 
+  /* MUDANÇA: Dá um respiro lateral para não grudar na borda da tela */
+  padding: 0 5%; 
+}
+
+.hero-content {
+  max-width: 800px;
+  /* MUDANÇA: Afasta o texto um pouco mais da esquerda para ficar chique como na foto */
+  padding-left: 4rem; 
+}
+
+.hero-content h1 {
+  font-family: var(--font-primary);
+  font-size: clamp(1.8rem, 3vw, 3.5rem);
+  font-weight: 400;
+  /* MUDANÇA: Deixei a linha levemente mais junta (1.1) para dar um ar mais editorial */
+  line-height: 1.1; 
+  margin-bottom: 1.5rem;
+  color: #ffffff !important;
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+  /* MUDANÇA: Aumentei o espaço entre as linhas do parágrafo para leitura suave */
+  line-height: 1.6; 
+  margin-bottom: 2.5rem;
+  /* MUDANÇA: Uma leve transparência no branco fica muito mais elegante */
+  color: rgba(255, 255, 255, 0.9) !important; 
+  /* MUDANÇA PRINCIPAL: Força o texto a quebrar a linha igualzinho à referência */
+  max-width: 650px; 
+}
+
+.hero .btn {
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+  /* MUDANÇA: Garante que o botão tenha aquele formato retangular bonito */
+  padding: 0.8rem 2.5rem; 
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.hero .btn:hover {
+  background: #FFFFFF !important;
+  color: #1a1a1a !important; /* Um cinza bem escuro para contrastar no hover */
+}
+
+/* Garante que no celular o texto não fique espremido por causa do padding */
+@media (max-width: 768px) {
+  .hero-content {
+    padding-left: 0; 
+  }
+}
+
+/* --- GRADE DE CATEGORIAS --- */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.category-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-align: left;
+}
+
+.category-item__image {
+  aspect-ratio: 1 / 1; 
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.category-item__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(20%); 
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-item:hover .category-item__image img {
+  transform: scale(1.08);
+}
+
+.category-item__label h3 {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.category-item__label span {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  font-style: italic;
+  font-family: var(--font-secondary);
+}
+
+@media (max-width: 1024px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- BARRA DE FILTROS E BUSCA (Versão Horizontal Original) --- */
+.filter-section {
+  margin-bottom: 4rem;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 0;
+}
+
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  gap: 3rem;
+}
+
+.filter-group select, 
+.search-group input {
+  border: none;
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text);
+  outline: none;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.filter-group select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-bottom: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.filter-group select:hover,
+.filter-group select:focus {
+  border-bottom-color: var(--color-text);
+}
+
+.search-group input {
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition);
+  width: 250px;
+}
+
+.search-group input:focus {
+  border-bottom-color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .search-group input {
+    width: 100%;
+  }
+}
+
+/* --- VITRINE DE PRODUTOS (Versão Original) --- */
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title h2 {
+  font-family: var(--font-secondary);
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.section-title span {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-accent);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 4rem 2rem;
+}
+
+.product-card-index {
+  position: relative;
+  text-align: center;
+}
+
+.product-card-index__image-wrapper {
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: #F0F0F0; 
+  aspect-ratio: 4/5;
+}
+
+.product-card-index__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.product-card-index:hover .product-card-index__image {
+  transform: scale(1.05); 
+}
+
+.product-card-index__title {
+  font-family: var(--font-secondary);
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.product-card-index__meta {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-light);
+}
+
+/* ==========================================
+   SEÇÕES DE DESTAQUE (MANIFESTO, ARQUITETOS, ETC)
+   ========================================== */
+.feature-section {
+  padding: 6rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.feature-grid__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.feature-subtitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.feature-title {
+  font-family: var(--font-primary);
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.feature-text {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.feature-list {
+  list-style: none;
+  margin-bottom: 2.5rem;
+}
+
+.feature-list li {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.8rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+/* Bolinha estilizada para a lista */
+.feature-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+}
+
+.feature-grid__image-wrapper {
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.feature-grid__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.5s ease;
+}
+
+.feature-grid__image-wrapper:hover .feature-grid__image {
+  transform: scale(1.05);
+}
+
+/* ==========================================
+   GRID DO JOURNAL NA HOME
+   ========================================== */
+.latest-posts-grid {
+    display: grid;
+    /* Cria 4 colunas no desktop e quebra para menos no mobile */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2.5rem;
+}
+
+.home-blog-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+}
+
+.home-blog-card .image-wrapper {
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    background: #f0f0f0;
+}
+
+.home-blog-card .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.home-blog-card:hover .image-wrapper img {
+    transform: scale(1.05); /* Efeito suave de zoom */
+}
+
+.home-blog-title {
+    font-family: var(--font-primary);
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin: 0.5rem 0 1rem 0;
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 900px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  /* Faz a foto ir para cima do texto no celular */
+  .feature-grid__image-wrapper {
+    grid-row: 1;
+  }
+}

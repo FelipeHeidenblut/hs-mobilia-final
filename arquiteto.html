@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Área do Profissional HS com curadoria de peças, informações técnicas e blocos 3D para projetos de arquitetura e interiores." />
+  <title>HS | Área do Profissional</title>
+  <link rel="stylesheet" href="./global.css" />
+  <link rel="stylesheet" href="./arquiteto.css" />
+  <script type="module" src="./arquiteto.js" defer></script>
+  <script type="module" src="./ui.js" defer></script>
+</head>
+<body data-page="arquiteto">
+  <div data-site-header></div>
+
+  <main id="conteudo" class="professional-main">
+    <div class="container">
+      <header class="portal-access-heading">
+        <span class="professional-eyebrow">Acesso restrito</span>
+        <h1>Portal do Profissional</h1>
+        <p>Acesse a Curadoria HS e nossa biblioteca de blocos 3D para especificação em projetos de arquitetura e interiores.</p>
+      </header>
+
+      <div id="architect-feedback" class="architect-feedback" role="status" aria-live="polite"></div>
+
+      <section id="auth-shell" class="auth-shell hidden" aria-labelledby="access-title">
+        <div id="acesso-profissional" class="auth-card">
+          <h2 id="access-title" class="sr-only">Entrar ou cadastrar</h2>
+          <div class="auth-tabs" role="tablist" aria-label="Acesso à conta">
+            <button id="login-tab" class="auth-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="login-form" data-auth-tab="login">Entrar</button>
+            <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false" aria-controls="register-form" data-auth-tab="register">Cadastrar</button>
+          </div>
+          <form id="login-form" class="auth-form" role="tabpanel" aria-labelledby="login-tab">
+            <div class="input-group"><label for="login-email">E-mail profissional</label><input type="email" id="login-email" name="email" autocomplete="email" required /></div>
+            <div class="input-group"><label for="login-password">Senha</label><input type="password" id="login-password" name="password" autocomplete="current-password" required /></div>
+            <button type="submit" class="btn btn-dark">Acessar Curadoria</button>
+          </form>
+          <form id="register-form" class="auth-form hidden" role="tabpanel" aria-labelledby="register-tab">
+            <div class="input-group"><label for="register-name">Nome ou escritório</label><input type="text" id="register-name" name="full_name" autocomplete="organization" required /></div>
+            <div class="input-group"><label for="register-email">E-mail profissional</label><input type="email" id="register-email" name="email" autocomplete="email" required /></div>
+            <div class="input-group"><label for="register-password">Criar senha</label><input type="password" id="register-password" name="password" autocomplete="new-password" minlength="8" required /></div>
+            <p class="auth-hint">Use pelo menos 8 caracteres.</p>
+            <button type="submit" class="btn btn-dark">Cadastrar e acessar</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="pending-shell" class="portal-message hidden">
+        <span class="professional-eyebrow">Finalizando acesso</span><h2>Confirme seu cadastro.</h2>
+        <p>Confira seu e-mail e, depois da confirmação, entre novamente para acessar a biblioteca técnica.</p>
+        <button id="signout-pending" class="btn btn-dark" type="button">Voltar ao login</button>
+      </section>
+      <section id="rejected-shell" class="portal-message hidden">
+        <span class="professional-eyebrow">Acesso indisponível</span><h2>Não foi possível abrir sua conta.</h2>
+        <p>Entre em contato com nossa equipe para receber ajuda com o acesso.</p>
+        <button id="signout-rejected" class="btn btn-dark" type="button">Sair</button>
+      </section>
+
+      <section id="approved-shell" class="professional-library hidden" aria-labelledby="library-title">
+        <header class="library-heading">
+          <div><span class="professional-eyebrow">Área do Profissional</span><h1 id="library-title">Curadoria HS</h1><p id="library-summary">Consulte informações e arquivos técnicos das peças.</p></div>
+          <button id="signout-approved" class="professional-signout" type="button">Encerrar sessão</button>
+        </header>
+
+        <nav class="library-tabs" role="tablist" aria-label="Conteúdo da Curadoria HS">
+          <button id="furniture-library-tab" class="library-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="furniture-library-panel" data-library-tab="furniture">Mobiliário</button>
+          <button id="textures-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="textures-library-panel" data-library-tab="textures">Texturas e acabamentos</button>
+        </nav>
+
+        <div id="furniture-library-panel" class="library-panel" role="tabpanel" aria-labelledby="furniture-library-tab">
+          <div class="library-toolbar" role="search">
+            <label class="library-search" for="searchInput"><span>Buscar</span><input type="search" id="searchInput" placeholder="Nome do móvel" autocomplete="off" /></label>
+            <label class="library-filter" for="categoryFilter"><span>Categoria</span><select id="categoryFilter"><option value="todos">Todas as categorias</option></select></label>
+          </div>
+          <div id="architect-products" class="product-grid" aria-live="polite"></div>
+          <div id="pagination-container" class="pagination" aria-label="Paginação da curadoria"></div>
+        </div>
+
+        <div id="textures-library-panel" class="library-panel hidden" role="tabpanel" aria-labelledby="textures-library-tab">
+          <nav id="professional-texture-menu" class="professional-texture-menu" aria-label="Tipos de textura"></nav>
+          <div class="library-toolbar library-toolbar--texture-search" role="search">
+            <label for="textureSearch"><span>Buscar textura</span><input type="search" id="textureSearch" placeholder="Nome da textura" autocomplete="off" /></label>
+          </div>
+          <p id="professional-textures-status" class="texture-library-status" role="status" aria-live="polite"></p>
+          <div id="professional-texture-groups" class="texture-library-groups"></div>
+          <div id="professional-texture-pagination" class="pagination texture-library-pagination" aria-label="Paginação das texturas"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div data-site-footer></div>
+</body>
+</html>

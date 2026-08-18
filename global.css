@@ -1,0 +1,594 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+:root {
+  --font-primary: 'Montserrat', sans-serif;
+  --font-secondary: 'Playfair Display', serif;
+
+  /* Paleta Sóbria e Sofisticada */
+  --color-bg: #FAFAFA;        
+  --color-text: #222222;      
+  --color-text-light: #777777;
+  --color-accent: #A68B6A;    
+  --color-border: #EAEAEA;
+  
+  --transition: all 0.4s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* 1. Para Títulos: Equilibra o tamanho das linhas */
+h1, h2, h3, .page-header-title {
+  text-wrap: balance;
+}
+
+/* 2. Para Parágrafos: Evita a palavra solta no final */
+p, .product-description, .texto-corrido {
+  text-wrap: pretty;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* --- UTILITÁRIOS --- */
+.container {
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section {
+  padding: 6rem 0;
+}
+
+/* ==========================================
+   SEÇÃO DO MANIFESTO
+   ========================================== */
+
+/* Estilo para Computador (2 colunas) */
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.manifesto-img-wrapper {
+  aspect-ratio: 4/5;
+}
+
+/* Estilo para Celular / Tablet (1 coluna) */
+@media (max-width: 900px) {
+  .manifesto-grid {
+    grid-template-columns: 1fr; /* Quebra para apenas uma coluna */
+    gap: 3rem; /* Diminui o espaço entre texto e foto */
+  }
+
+  /* Puxa a imagem para cima do texto no celular (dá uma estética melhor) */
+  .manifesto-img-wrapper {
+    grid-row: 1;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- HEADER FIXO E TRANSPARENTE --- */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.75rem 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF; 
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-text {
+  font-family: var(--font-secondary);
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Ajuste para a nova logo em imagem */
+.brand-logo {
+  height: 70px; /* Define uma altura fixa elegante para a logo */
+  width: auto;  /* Mantém a proporção de largura original do PNG */
+  display: block;
+  object-fit: contain;
+}
+
+.main-nav {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.main-nav a {
+  font-size: 0.70rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 400;
+  transition: var(--transition);
+}
+
+.main-nav a:hover {
+  color: var(--color-accent);
+}
+
+.main-nav a[aria-current="page"] {
+  color: var(--color-accent);
+}
+
+/* ==========================================
+   AJUSTES PARA PÁGINAS INTERNAS (FUNDO CLARO)
+   ========================================== */
+
+/* 1. Transforma a logo branca em escura */
+.header-interno .brand-logo {
+  filter: invert(1); 
+}
+
+.header-interno .main-nav a {
+  color: var(--color-text, #222222) !important;
+}
+
+.header-interno .mobile-menu-btn span {
+  background-color: var(--color-text, #222222) !important;
+}
+
+/* ==========================================
+   BOTÃO "FALE CONOSCO" DA NAVEGAÇÃO
+   ========================================== */
+
+/* 1. Estilo padrão para a Home (Fundo escuro, botão com borda branca) */
+.main-nav .btn-nav {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  border: 1px solid #FFFFFF;
+  border-radius: 0; /* Bordas retas e minimalistas */
+  color: #FFFFFF;
+}
+
+.main-nav .btn-nav:hover {
+  background-color: #FFFFFF;
+  color: var(--color-text, #1a1a1a) !important;
+}
+
+/* 2. Estilo para as páginas internas (Fundo branco, botão com borda escura) */
+.header-interno .main-nav .btn-nav {
+  border-color: var(--color-text, #222222);
+  color: var(--color-text, #222222) !important;
+}
+
+.header-interno .main-nav .btn-nav:hover {
+  background-color: var(--color-text, #222222);
+  color: #FFFFFF !important;
+}
+
+/* --- BOTÕES --- */
+.btn {
+  display: inline-block;
+  padding: 1rem 3rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 1px solid #FFFFFF;
+  background: transparent;
+  color: #FFFFFF;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #FFFFFF;
+  color: var(--color-text);
+}
+
+.btn-dark {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.btn-dark:hover {
+  background: var(--color-text);
+  color: #FFFFFF;
+}
+
+/* Botões Portal do Arquiteto */
+.product-card .btn,
+.product-card__downloads .btn {
+  background-color: var(--color-text); 
+  color: #FFFFFF !important;           
+  border: 1px solid var(--color-text);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.7rem;
+  margin-top: 1rem;
+  width: 100%; 
+  text-align: center;
+}
+
+/* Botão com borda branca e hover invertido para fundos escuros */
+.btn-outline-white {
+  border: 1px solid #ffffff !important;
+  color: #ffffff !important;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-white:hover {
+  background-color: #ffffff !important;
+  color: var(--color-text) !important; /* Puxa o chumbo/preto do seu site */
+}
+
+.product-card .btn:hover,
+.product-card__downloads .btn:hover {
+  background-color: var(--color-accent); 
+  border-color: var(--color-accent);
+  color: #FFFFFF !important;
+}
+
+/* --- FORMULÁRIOS MINIMALISTAS --- */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.input-group label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.input-group input, .input-group textarea {
+  width: 100%;
+  padding: 0.8rem 0;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-text);
+  transition: var(--transition);
+  outline: none;
+}
+
+.input-group input:focus, .input-group textarea:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.input-group textarea {
+  resize: vertical; 
+  min-height: 80px;
+}
+
+/* --- TABELAS DE ADMINISTRAÇÃO --- */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+}
+
+.admin-table td {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 2px;
+}
+
+.status-badge.pending { background-color: #FFF3CD; color: #856404; }
+.status-badge.approved { background-color: #D4EDDA; color: #155724; }
+.status-badge.rejected { background-color: #F8D7DA; color: #721C24; }
+
+.admin-table .btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.65rem;
+  margin-right: 0.5rem;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.admin-table .btn:hover {
+  border-color: var(--color-text);
+}
+
+/* --- RODAPÉ --- */
+/* ==========================================
+   FOOTER (RODAPÉ) - COMPLETO E RESPONSIVO
+   ========================================== */
+.site-footer {
+  background-color: #1a1a1a; /* O fundo escuro e elegante do seu print */
+  color: #f7f7f7;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Uma linha super sutil para separar do site */
+}
+
+.footer-container {
+  display: grid;
+  /* Força 4 colunas no computador. 
+     Uso proporções (1.5fr) para dar mais espaço ao texto "Sobre" e "Contato" */
+  grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
+  gap: 2rem; 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.footer-title {
+  color: #C68E58; /* Ajuste para o seu tom exato de dourado/bronze */
+  font-size: 1.0rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.footer-col p {
+  color: #f7f7f7; 
+  font-size: 0.92rem;
+  line-height: 1.8;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.footer-about {
+  max-width: 350px;
+}
+
+.footer-about h2 {
+  color: #fff;
+  font-family: var(--font-primary);
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.footer-accent-link {
+  color: #C68E58;
+  transition: opacity 0.3s ease;
+}
+
+.footer-accent-link:hover {
+  opacity: 0.8;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: rgba(247, 247, 247, 0.5);
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  color: #f7f7f7;
+  text-decoration: none;
+  font-size: 0.95rem;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito luminoso ao passar o mouse nos links */
+.footer-links a:hover {
+  opacity: 1;
+  color: #ffffff;
+}
+
+/* ==========================================
+   PASSO 1: O BOTÃO HAMBÚRGUER
+   ========================================== */
+
+/* Esconde o botão em telas normais (computador) */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 99999;
+}
+
+/* Desenha as 3 linhas brancas do botão */
+.mobile-menu-btn span {
+  width: 30px;
+  height: 2px;
+  background-color: #FFFFFF; 
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn.is-open span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.mobile-menu-btn.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.is-open span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Ativa o menu compacto também em tablets, onde os links já não cabem com conforto. */
+@media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .site-header.site-header {
+    padding: 1rem 0;
+  }
+
+  .brand-logo {
+    height: 56px;
+  }
+
+  .main-nav {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    padding: max(7rem, env(safe-area-inset-top)) 1.5rem max(3rem, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: var(--color-text);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: clamp(1rem, 3vh, 2rem);
+    z-index: 99998;
+  }
+
+  .main-nav a {
+    font-size: clamp(1.05rem, 4vw, 1.5rem);
+    line-height: 1.3;
+    text-align: center;
+    color: #FFFFFF !important;
+  }
+
+  .main-nav.active {
+    display: flex !important;
+  }
+
+  .header-interno .main-nav a,
+  .header-interno .main-nav .btn-nav {
+    color: #FFFFFF !important;
+  }
+
+  .header-interno .mobile-menu-btn.is-open span {
+    background-color: #FFFFFF !important;
+  }
+
+  .main-nav .btn-nav,
+  .header-interno .main-nav .btn-nav {
+    width: min(100%, 300px);
+    padding: 0.8rem 1.5rem;
+    border-color: #FFFFFF;
+  }
+}
+
+@media (max-width: 768px) {
+  .section { padding: 4rem 0; }
+  .footer-grid { grid-template-columns: 1fr; gap: 3rem; }
+}
+
+@media (max-width: 480px) {
+  .site-header.site-header {
+    padding: 0.75rem 0;
+  }
+
+  .brand-logo {
+    height: 48px;
+  }
+
+  .main-nav {
+    padding-top: max(6rem, env(safe-area-inset-top));
+  }
+}
+
+/* Responsividade: Em telas médias (Tablets/Notebooks pequenos), vira 2 colunas */
+@media (max-width: 992px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Responsividade: No celular, fica tudo empilhado em 1 coluna */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+}

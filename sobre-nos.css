@@ -1,0 +1,46 @@
+/* ==========================================
+   PÁGINA SOBRE NÓS
+   ========================================== */
+.about-hero {
+  padding: 4rem 0 8rem 0; /* Dá um super respiro no topo para ficar chique */
+  background-color: var(--color-bg);
+}
+
+.about-manifesto {
+  margin-bottom: 5rem;
+}
+
+.manifesto-content p {
+  color: var(--color-text-light);
+  font-size: 1rem;
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.manifesto-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s ease;
+}
+
+/* Efeito de zoom muito suave na foto para dar vida à página */
+.manifesto-image-wrapper:hover img {
+  transform: scale(1.03);
+}
+
+/* Responsividade: Celular e Tablets */
+@media (max-width: 992px) {
+  .manifesto-grid {
+    grid-template-columns: 1fr; /* Vira 1 coluna só */
+    gap: 3rem;
+  }
+  
+  .manifesto-image-wrapper {
+    order: -1; /* Joga a foto para cima do texto no celular */
+    aspect-ratio: 16/9; /* Deixa a foto horizontal no celular para não ocupar a tela inteira */
+  }
+}
+main {
+  padding-top: 80px;
+}
