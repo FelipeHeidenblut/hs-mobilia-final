@@ -33,7 +33,7 @@ let currentTexturePage = 1;
 let renderVersion = 0;
 let activeLibrary = 'furniture';
 let activeTextureMaterial = '';
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 9;
 const TEXTURES_PER_PAGE = 15;
 
 function showFeedback(message, type = 'info') {
