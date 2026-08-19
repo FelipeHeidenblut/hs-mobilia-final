@@ -97,7 +97,7 @@ function footerTemplate() {
       <div class="footer-container">
         <div class="footer-col footer-about">
           <h2>HS Mobília • HS Casual</h2>
-          <p>Mobiliário com design atemporal que acompanha diferentes formas de viver.</p>
+          <p>Mobiliário com design atemporal e casual que acompanha diferentes formas de viver.</p>
         </div>
         <div class="footer-col">
           <h3 class="footer-title">Explorar</h3>
@@ -110,7 +110,7 @@ function footerTemplate() {
         </div>
         <div class="footer-col">
           <h3 class="footer-title">Contato</h3>
-          <p>HS: Av. Barão do Rio Branco, 1128,<br>Jardim Esplanada.</p>
+          <p>HS Mobília: Av. Barão do Rio Branco, 1128,<br>Jardim Esplanada.</p>
           <p>HS Casual: Av. São João, 1945,<br>Jardim Esplanada.</p>
           <p><a class="footer-accent-link" href="mailto:leonardo@hsmobilia.com.br">leonardo@hsmobilia.com.br</a></p>
         </div>
