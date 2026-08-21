@@ -2,9 +2,9 @@ import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const SITE_URL = 'https://hsmobilia.com.br';
+const SITE_URL = 'https://felipeheidenblut.github.io/hs-mobilia-final';
 const SUPABASE_URL = 'https://kuymrkdcjejhhjtsrnaa.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_PUBLIC_KEY = process.env.SUPABASE_PUBLIC_KEY || process.env.SUPABASE_ANON_KEY;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const escapeXml = (value) => String(value)
@@ -15,9 +15,9 @@ const escapeXml = (value) => String(value)
   .replaceAll("'", '&apos;');
 
 async function request(table, query) {
-  if (!SUPABASE_ANON_KEY) return [];
+  if (!SUPABASE_PUBLIC_KEY) return [];
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, {
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+    headers: { apikey: SUPABASE_PUBLIC_KEY, Authorization: `Bearer ${SUPABASE_PUBLIC_KEY}` },
   });
   if (!response.ok) throw new Error(`${table}: HTTP ${response.status}`);
   return response.json();
@@ -38,7 +38,7 @@ const urls = [
   `${SITE_URL}/blog.html`,
 ];
 
-if (SUPABASE_ANON_KEY) {
+if (SUPABASE_PUBLIC_KEY) {
   const [productResult, postResult] = await Promise.allSettled([
     loadProducts(),
     request('blog_posts', 'select=slug&publicado=eq.true&order=created_at.desc'),
@@ -50,7 +50,7 @@ if (SUPABASE_ANON_KEY) {
   products.forEach(({ id }) => urls.push(`${SITE_URL}/produto.html?id=${encodeURIComponent(id)}`));
   posts.forEach(({ slug }) => urls.push(`${SITE_URL}/artigo.html?slug=${encodeURIComponent(slug)}`));
 } else {
-  console.warn('SUPABASE_ANON_KEY não definida; sitemap gerado somente com páginas estáticas.');
+  console.warn('SUPABASE_PUBLIC_KEY não definida; sitemap gerado somente com páginas estáticas.');
 }
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>

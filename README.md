@@ -57,10 +57,10 @@ Não coloque uma chave `service_role` em nenhum arquivo deste projeto.
 
 ## Atualizar o sitemap
 
-Após publicar ou remover produtos e artigos, gere novamente o sitemap usando a chave pública `anon` do Supabase:
+Após publicar ou remover produtos e artigos, gere novamente o sitemap usando a chave publicável do Supabase:
 
 ```bash
-SUPABASE_ANON_KEY="sua-chave-anon" node scripts/generate-sitemap.mjs
+SUPABASE_PUBLIC_KEY="sua-chave-publicável" node scripts/generate-sitemap.mjs
 ```
 
 A chave `service_role` não deve ser usada nesse comando.

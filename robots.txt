@@ -4,4 +4,4 @@ Disallow: /admin.html
 Disallow: /arquiteto.html
 Disallow: /arquiteto-produto.html
 
-Sitemap: https://hsmobilia.com.br/sitemap.xml
+Sitemap: https://felipeheidenblut.github.io/hs-mobilia-final/sitemap.xml
