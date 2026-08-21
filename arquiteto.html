@@ -30,18 +30,37 @@
       <section id="auth-shell" class="auth-shell hidden" aria-labelledby="access-title">
         <div id="acesso-profissional" class="auth-card">
           <h2 id="access-title" class="sr-only">Entrar ou cadastrar</h2>
+
           <div class="auth-tabs" role="tablist" aria-label="Acesso à conta">
             <button id="login-tab" class="auth-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="login-form" data-auth-tab="login">Entrar</button>
             <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false" aria-controls="register-form" data-auth-tab="register">Cadastrar</button>
           </div>
+
           <form id="login-form" class="auth-form" role="tabpanel" aria-labelledby="login-tab">
-            <div class="input-group"><label for="login-email">E-mail profissional</label><input type="email" id="login-email" name="email" autocomplete="email" required /></div>
-            <div class="input-group"><label for="login-password">Senha</label><input type="password" id="login-password" name="password" autocomplete="current-password" required /></div>
+            <div class="input-group">
+              <label for="login-email">E-mail profissional</label>
+              <input type="email" id="login-email" name="email" autocomplete="email" required />
+            </div>
+
+            <div class="input-group">
+              <label for="login-password">Senha</label>
+              <input type="password" id="login-password" name="password" autocomplete="current-password" required />
+            </div>
+
             <button type="submit" class="btn btn-dark">Acessar Curadoria</button>
           </form>
+
           <form id="register-form" class="auth-form hidden" role="tabpanel" aria-labelledby="register-tab">
-            <div class="input-group"><label for="register-name">Nome completo ou escritório</label><input type="text" id="register-name" name="full_name" autocomplete="organization" minlength="3" required /></div>
-            <div class="input-group"><label for="register-email">E-mail profissional</label><input type="email" id="register-email" name="email" autocomplete="email" required /></div>
+            <div class="input-group">
+              <label for="register-name">Nome completo ou escritório</label>
+              <input type="text" id="register-name" name="full_name" autocomplete="organization" minlength="3" required />
+            </div>
+
+            <div class="input-group">
+              <label for="register-email">E-mail profissional</label>
+              <input type="email" id="register-email" name="email" autocomplete="email" required />
+            </div>
+
             <div class="auth-field-row">
               <div class="input-group">
                 <label for="register-registry-type">Conselho profissional</label>
@@ -51,10 +70,23 @@
                   <option value="ABD">ABD</option>
                 </select>
               </div>
-              <div class="input-group"><label for="register-registry-number">Número do registro</label><input type="text" id="register-registry-number" name="registry_number" autocomplete="off" minlength="4" maxlength="30" placeholder="Ex.: A123456-7" required /></div>
+
+              <div class="input-group">
+                <label for="register-registry-number">Número do registro</label>
+                <input type="text" id="register-registry-number" name="registry_number" autocomplete="off" minlength="4" maxlength="30" placeholder="Ex.: A123456-7" required />
+              </div>
             </div>
-            <div class="input-group"><label for="register-instagram">Instagram profissional</label><input type="text" id="register-instagram" name="instagram" autocomplete="url" maxlength="100" placeholder="@seuperfil" required /></div>
-            <div class="input-group"><label for="register-password">Criar senha</label><input type="password" id="register-password" name="password" autocomplete="new-password" minlength="8" required /></div>
+
+            <div class="input-group">
+              <label for="register-instagram">Instagram profissional</label>
+              <input type="text" id="register-instagram" name="instagram" autocomplete="url" maxlength="100" placeholder="@seuperfil" required />
+            </div>
+
+            <div class="input-group">
+              <label for="register-password">Criar senha</label>
+              <input type="password" id="register-password" name="password" autocomplete="new-password" minlength="8" required />
+            </div>
+
             <p class="auth-hint">A senha deve ter pelo menos 8 caracteres. O acesso será liberado após a análise da HS.</p>
             <button type="submit" class="btn btn-dark">Enviar cadastro para análise</button>
           </form>
@@ -62,33 +94,51 @@
       </section>
 
       <section id="pending-shell" class="portal-message hidden">
-        <span class="professional-eyebrow">Aguardando aprovação</span><h2>Cadastro em análise.</h2>
+        <span class="professional-eyebrow">Aguardando aprovação</span>
+        <h2>Cadastro em análise.</h2>
         <p>Recebemos seus dados profissionais. A equipe da HS fará a validação antes de liberar o acesso à biblioteca técnica.</p>
         <button id="signout-pending" class="btn btn-dark" type="button">Voltar ao login</button>
       </section>
+
       <section id="rejected-shell" class="portal-message hidden">
-        <span class="professional-eyebrow">Acesso não liberado</span><h2>Cadastro não aprovado.</h2>
+        <span class="professional-eyebrow">Acesso não liberado</span>
+        <h2>Cadastro não aprovado.</h2>
         <p>Entre em contato com nossa equipe caso queira revisar os dados profissionais enviados.</p>
         <button id="signout-rejected" class="btn btn-dark" type="button">Sair</button>
       </section>
 
       <section id="approved-shell" class="professional-library hidden" aria-labelledby="library-title">
         <header class="library-heading">
-          <div><span class="professional-eyebrow">Área do Profissional</span><h1 id="library-title">Curadoria HS</h1><p id="library-summary">Consulte informações e arquivos técnicos das peças.</p></div>
+          <div>
+            <span class="professional-eyebrow">Área do Profissional</span>
+            <h1 id="library-title">Curadoria HS</h1>
+            <p id="library-summary">Consulte informações e arquivos técnicos das peças.</p>
+          </div>
+
           <button id="signout-approved" class="professional-signout" type="button">Encerrar sessão</button>
         </header>
 
         <nav class="library-tabs" role="tablist" aria-label="Conteúdo da Curadoria HS">
           <button id="furniture-library-tab" class="library-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="furniture-library-panel" data-library-tab="furniture">Mobiliário</button>
           <button id="textures-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="textures-library-panel" data-library-tab="textures">Texturas e acabamentos</button>
-          <button id="prices-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="prices-library-panel" data-library-tab="prices">Preços</button>
+          <button id="prices-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="prices-library-panel" data-library-tab="prices">Instruções de investimento</button>
         </nav>
 
         <div id="furniture-library-panel" class="library-panel" role="tabpanel" aria-labelledby="furniture-library-tab">
           <div class="library-toolbar" role="search">
-            <label class="library-search" for="searchInput"><span>Buscar</span><input type="search" id="searchInput" placeholder="Ex.: sofá retrátil" autocomplete="off" /></label>
-            <label class="library-filter" for="categoryFilter"><span>Categoria</span><select id="categoryFilter"><option value="todos">Todas as categorias</option></select></label>
+            <label class="library-search" for="searchInput">
+              <span>Buscar</span>
+              <input type="search" id="searchInput" placeholder="Ex.: sofá retrátil" autocomplete="off" />
+            </label>
+
+            <label class="library-filter" for="categoryFilter">
+              <span>Categoria</span>
+              <select id="categoryFilter">
+                <option value="todos">Todas as categorias</option>
+              </select>
+            </label>
           </div>
+
           <div id="architect-products" class="product-grid" aria-live="polite"></div>
           <div id="pagination-container" class="pagination" aria-label="Paginação da curadoria"></div>
         </div>
@@ -104,13 +154,19 @@
           <section class="price-guide" aria-labelledby="price-guide-title">
             <header class="price-guide__heading">
               <span class="professional-eyebrow">Referência de investimento</span>
-              <h2 id="price-guide-title">Faixas de preço</h2>
+              <h2 id="price-guide-title">Instruções de investimento</h2>
               <p>Cada cifrão representa uma faixa de R$ 5 mil. Os valores são referências iniciais e podem variar conforme dimensões, acabamentos e personalizações.</p>
               <p>Para peças acima de R$ 50 mil, entre em contato com um consultor para mais informações.</p>
             </header>
+
             <div class="price-guide__table-wrapper">
               <table class="price-guide__table">
-                <thead><tr><th scope="col">Símbolo</th><th scope="col">Faixa de valor</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th scope="col">Símbolo</th>
+                    <th scope="col">Faixa de investimento</th>
+                  </tr>
+                </thead>
                 <tbody id="professional-price-ranges"></tbody>
               </table>
             </div>
@@ -119,6 +175,7 @@
       </section>
     </div>
   </main>
+
   <div data-site-footer></div>
 </body>
 </html>
