@@ -24,6 +24,7 @@ Depois, acesse `http://localhost:8080`.
 - `config.js`: informações gerais e canais de contato.
 - `supabase/migrations/`: alterações e políticas de segurança do banco.
 - `imagens/`: imagens estáticas do site.
+- `robots.txt`, `sitemap.xml` e `404.html`: arquivos técnicos de indexação e tratamento de URLs inválidas.
 
 ## Publicação e Supabase
 
@@ -34,13 +35,14 @@ Antes de publicar esta versão:
 3. Crie ou localize o usuário administrativo em Authentication > Users.
 4. Execute o comando indicado no final da migration, substituindo pelo e-mail administrativo.
 5. Em Authentication > URL Configuration, configure a URL publicada do site e os redirects permitidos.
-6. Teste cadastro, confirmação de e-mail e acesso imediato aos arquivos com uma conta de teste.
+6. Execute `supabase/migrations/004_restore_manual_architect_approval.sql` para adicionar CAU/ABD, Instagram e restaurar a aprovação manual.
+7. Teste cadastro, confirmação de e-mail, aprovação pelo painel administrativo e acesso aos arquivos com uma conta de teste.
 
 Se o acervo responder com `PGRST205` para `public_products`, execute também
 `supabase/migrations/002_restore_public_catalog.sql`. Essa migration recria a view pública e atualiza o cache da API.
 
-Para projetos que já executaram uma versão anterior das políticas de aprovação profissional,
-execute também `supabase/migrations/003_simplify_professional_access.sql`.
+`003_simplify_professional_access.sql` é mantida apenas como histórico da fase de acesso automático.
+Não a execute depois da migration `004`, pois isso voltaria a liberar qualquer usuário autenticado.
 
 A chave `anon` no navegador é pública por definição. A proteção dos dados depende das políticas RLS incluídas na migration.
 
@@ -52,3 +54,13 @@ A chave `anon` no navegador é pública por definição. A proteção dos dados 
 - Produtos, acabamentos, profissionais e artigos continuam sendo gerenciados pelo Supabase/painel.
 
 Não coloque uma chave `service_role` em nenhum arquivo deste projeto.
+
+## Atualizar o sitemap
+
+Após publicar ou remover produtos e artigos, gere novamente o sitemap usando a chave pública `anon` do Supabase:
+
+```bash
+SUPABASE_ANON_KEY="sua-chave-anon" node scripts/generate-sitemap.mjs
+```
+
+A chave `service_role` não deve ser usada nesse comando.

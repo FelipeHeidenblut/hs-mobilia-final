@@ -115,6 +115,30 @@
   gap: 1.8rem;
 }
 
+.auth-field-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.4fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 1.5rem;
+}
+
+.auth-form select {
+  width: 100%;
+  padding: 0.8rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+}
+
+.auth-form select:focus {
+  border-bottom-color: var(--color-accent);
+}
+
 .auth-form .btn {
   width: 100%;
   margin-top: 0.8rem;
@@ -237,6 +261,65 @@ body.is-professional-authenticated .header-inner {
   background: var(--color-text);
 }
 
+.price-guide {
+  max-width: 820px;
+}
+
+.price-guide__heading {
+  max-width: 680px;
+  margin-bottom: 3rem;
+}
+
+.price-guide__heading h2 {
+  margin: 0.8rem 0 1rem;
+  font-family: var(--font-secondary);
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 400;
+}
+
+.price-guide__heading p {
+  color: var(--color-text-light);
+  line-height: 1.8;
+}
+
+.price-guide__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.price-guide__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.price-guide__table th,
+.price-guide__table td {
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.price-guide__table th {
+  color: var(--color-text-light);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.price-guide__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.price-guide__symbols {
+  width: 50%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
 .library-toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 0.35fr);
@@ -274,11 +357,6 @@ body.is-professional-authenticated .header-inner {
 .library-toolbar input:focus,
 .library-toolbar select:focus {
   border-bottom-color: var(--color-accent);
-}
-
-.library-toolbar--texture-search {
-  grid-template-columns: minmax(0, 600px);
-  margin-bottom: 3rem;
 }
 
 .professional-texture-menu {
@@ -522,6 +600,10 @@ body.is-professional-authenticated .header-inner {
 
   .auth-card {
     padding: 2rem 1.3rem;
+  }
+
+  .auth-field-row {
+    grid-template-columns: 1fr;
   }
 
   .library-heading {

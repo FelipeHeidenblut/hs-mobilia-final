@@ -1,4 +1,6 @@
-const CONTACT_URL = 'https://bio.site/hsmobilia_';
+import { SITE_CONFIG } from './config.js';
+
+const CONTACT_URL = 'https://bio.site/hsmobiliacasual';
 
 export function escapeHTML(value = '') {
   return String(value)
@@ -19,20 +21,200 @@ export function safeHttpUrl(value, fallback = '') {
   }
 }
 
-export function updateDocumentMeta({ title, description, image }) {
-  if (title) document.title = title;
-  const values = { description, 'og:title': title, 'og:description': description, 'og:image': image };
-  Object.entries(values).forEach(([name, content]) => {
-    if (!content) return;
-    const attribute = name.startsWith('og:') ? 'property' : 'name';
-    let meta = document.head.querySelector(`meta[${attribute}="${name}"]`);
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.setAttribute(attribute, name);
-      document.head.append(meta);
-    }
-    meta.setAttribute('content', content);
+export function normalizeSearchText(value = '') {
+  return String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+export function filterProductsBySearch(products = [], query = '') {
+  const tokens = [...new Set(normalizeSearchText(query).split(' ').filter(Boolean))];
+  if (!tokens.length) return [...products];
+
+  const ranked = products.map((product, index) => {
+    const primaryText = normalizeSearchText([
+      product.name,
+      product.category,
+    ].filter(Boolean).join(' '));
+    const secondaryText = normalizeSearchText([
+      product.brand,
+      product.description,
+      product.dimensions,
+    ].filter(Boolean).join(' '));
+    const matchedTokens = tokens.filter((token) => primaryText.includes(token) || secondaryText.includes(token));
+    const score = tokens.reduce((total, token) => {
+      if (primaryText.includes(token)) return total + 3;
+      if (secondaryText.includes(token)) return total + 1;
+      return total;
+    }, 0);
+    return { product, index, matchedCount: matchedTokens.length, score };
   });
+  const completeMatches = ranked.filter(({ matchedCount }) => matchedCount === tokens.length);
+  const highestPartialScore = Math.max(0, ...ranked.map(({ score }) => score));
+  const matches = completeMatches.length
+    ? completeMatches
+    : ranked.filter(({ score }) => score > 0 && score === highestPartialScore);
+  return matches
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map(({ product }) => product);
+}
+
+function productNameParts(product = {}) {
+  const name = String(product.name || '').trim();
+  const category = String(product.category || '').trim();
+  if (!name) return { category, model: '' };
+
+  const normalizedName = normalizeSearchText(name);
+  const normalizedCategory = normalizeSearchText(category);
+  if (category && (normalizedName === normalizedCategory || normalizedName.startsWith(`${normalizedCategory} `))) {
+    return { category, model: name.slice(category.length).trim() };
+  }
+
+  if (category) return { category, model: name };
+  const [firstWord = '', ...remainingWords] = name.split(/\s+/);
+  return { category: firstWord, model: remainingWords.join(' ') };
+}
+
+export function getProductDisplayName(product = {}) {
+  const { category, model } = productNameParts(product);
+  if (!model) return category || 'Peça selecionada';
+  const [modelWord] = model.split(/\s+/);
+  const abbreviatedModel = [...modelWord].slice(0, 3).join('');
+  return [category, abbreviatedModel].filter(Boolean).join(' ');
+}
+
+export function getProductDisplayText(value, product = {}) {
+  let text = String(value || '');
+  const fullName = String(product.name || '').trim();
+  const displayName = getProductDisplayName(product);
+  const { model } = productNameParts(product);
+  const [modelWord = ''] = model.split(/\s+/);
+  const abbreviatedModel = [...modelWord].slice(0, 3).join('');
+  const escapeRegExp = (word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const replaceStandalone = (source, word, replacement) => source.replace(
+    new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRegExp(word)}(?=$|[^\\p{L}\\p{N}])`, 'giu'),
+    `$1${replacement}`,
+  );
+
+  if (fullName) text = text.replace(new RegExp(escapeRegExp(fullName), 'gi'), displayName);
+  if (model.length > abbreviatedModel.length) {
+    text = replaceStandalone(text, model, abbreviatedModel);
+  }
+  if (modelWord.length > abbreviatedModel.length) {
+    text = replaceStandalone(text, modelWord, abbreviatedModel);
+  }
+  return text;
+}
+
+export const PRICE_RANGE_STEP = 5;
+export const PRICE_RANGE_COUNT = 10;
+
+export function getProductPriceInThousands(product = {}) {
+  const priceText = [product.price_from, product.brand]
+    .filter((value) => value !== undefined && value !== null)
+    .join(' ');
+  const match = priceText.match(/(?:a partir de\s*:?\s*)?R\$\s*([\d.,]+)/i);
+  if (!match) return null;
+
+  const rawPrice = match[1];
+  if (/[.,]/.test(rawPrice)) {
+    const valueInReais = Number(rawPrice.replace(/\./g, '').replace(',', '.'));
+    return Number.isFinite(valueInReais) ? valueInReais / 1000 : null;
+  }
+
+  const numericPrice = Number(rawPrice);
+  if (!Number.isFinite(numericPrice)) return null;
+  return numericPrice <= 200 ? numericPrice : numericPrice / 1000;
+}
+
+export function getProductPriceSymbols(product = {}) {
+  const priceInThousands = getProductPriceInThousands(product);
+  if (priceInThousands === null || isProductPriceAboveRange(product)) return '';
+  const range = Math.max(1, Math.ceil(priceInThousands / PRICE_RANGE_STEP));
+  return '$'.repeat(range);
+}
+
+export function isProductPriceAboveRange(product = {}) {
+  const priceInThousands = getProductPriceInThousands(product);
+  return priceInThousands !== null && priceInThousands > PRICE_RANGE_STEP * PRICE_RANGE_COUNT;
+}
+
+export function getPriceRangeRows(count = PRICE_RANGE_COUNT) {
+  return Array.from({ length: count }, (_, index) => {
+    const level = index + 1;
+    return {
+      symbols: '$'.repeat(level),
+      range: `${index * PRICE_RANGE_STEP} – ${level * PRICE_RANGE_STEP} mil`,
+    };
+  });
+}
+
+function absoluteSiteUrl(value = '') {
+  if (!value) return '';
+  try {
+    return new URL(value, `${SITE_CONFIG.siteUrl}/`).href;
+  } catch {
+    return '';
+  }
+}
+
+function upsertMeta(attribute, name, content) {
+  if (!content) return;
+  let meta = document.head.querySelector(`meta[${attribute}="${name}"]`);
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.setAttribute(attribute, name);
+    document.head.append(meta);
+  }
+  meta.setAttribute('content', content);
+}
+
+export function updateDocumentMeta({ title, description, image, canonical, type = 'website' }) {
+  if (title) document.title = title;
+  const canonicalUrl = absoluteSiteUrl(canonical || window.location.pathname + window.location.search);
+  const imageUrl = absoluteSiteUrl(image);
+
+  upsertMeta('name', 'description', description);
+  upsertMeta('property', 'og:title', title);
+  upsertMeta('property', 'og:description', description);
+  upsertMeta('property', 'og:image', imageUrl);
+  upsertMeta('property', 'og:url', canonicalUrl);
+  upsertMeta('property', 'og:type', type);
+  upsertMeta('property', 'og:locale', 'pt_BR');
+  upsertMeta('property', 'og:site_name', SITE_CONFIG.name);
+  upsertMeta('name', 'twitter:card', imageUrl ? 'summary_large_image' : 'summary');
+  upsertMeta('name', 'twitter:title', title);
+  upsertMeta('name', 'twitter:description', description);
+  upsertMeta('name', 'twitter:image', imageUrl);
+
+  if (canonicalUrl) {
+    let link = document.head.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'canonical';
+      document.head.append(link);
+    }
+    link.href = canonicalUrl;
+  }
+}
+
+export function updateStructuredData(id, data) {
+  if (!id || !data) return;
+  let script = document.getElementById(id);
+  if (!script) {
+    script = document.createElement('script');
+    script.id = id;
+    script.type = 'application/ld+json';
+    document.head.append(script);
+  }
+  script.textContent = JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
+export function markPageAsNoIndex({ follow = true } = {}) {
+  upsertMeta('name', 'robots', follow ? 'noindex,follow' : 'noindex,nofollow');
 }
 
 export function renderPublicProducts(container, products = [], options = {}) {
@@ -44,7 +226,7 @@ export function renderPublicProducts(container, products = [], options = {}) {
 
   container.innerHTML = products.map((product) => {
     const id = encodeURIComponent(product.id);
-    const name = escapeHTML(product.name || 'Peça sem nome');
+    const name = escapeHTML(getProductDisplayName(product));
     const category = escapeHTML(product.category || '');
     const imageUrl = safeHttpUrl(product.image_url);
     const detailPage = professional ? 'arquiteto-produto.html' : 'produto.html';
@@ -54,7 +236,7 @@ export function renderPublicProducts(container, products = [], options = {}) {
       <article class="product-card">
         <a href="./${detailPage}?id=${id}" class="product-card__link">
           <div class="product-card__image-wrapper">
-            <img class="product-card__image" src="${escapeHTML(imageUrl)}" alt="${name}" loading="lazy" decoding="async" />
+            <img class="product-card__image" src="${escapeHTML(imageUrl)}" alt="${name}" width="1200" height="800" loading="lazy" decoding="async" />
           </div>
           <h3 class="product-card__title">${name}</h3>
           ${category ? `<p class="product-card__meta">${category}</p>` : ''}

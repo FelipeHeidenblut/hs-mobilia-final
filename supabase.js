@@ -120,7 +120,7 @@ export async function getArchitectProfile() {
   if (!user) return null;
   const { data, error } = await supabase
     .from('architects')
-    .select('id,user_id,full_name,email,status')
+    .select('id,user_id,full_name,email,status,registry_type,registry_number,instagram')
     .eq('user_id', user.id)
     .single();
   if (error) return null;

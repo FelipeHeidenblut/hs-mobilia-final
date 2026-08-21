@@ -1,6 +1,7 @@
 import { fetchPostBySlug } from './supabase.js';
-import { escapeHTML, safeHttpUrl, updateDocumentMeta } from './ui.js';
+import { escapeHTML, markPageAsNoIndex, safeHttpUrl, updateDocumentMeta, updateStructuredData } from './ui.js';
 import { sanitizeRichHTML } from './sanitize.js';
+import { SITE_CONFIG } from './config.js';
 
 async function loadArticle() {
     const container = document.getElementById('article-content');
@@ -10,7 +11,8 @@ async function loadArticle() {
     const slug = urlParams.get('slug');
 
     if (!slug) {
-        window.location.href = 'blog.html';
+        markPageAsNoIndex();
+        window.location.replace('blog.html');
         return;
     }
 
@@ -29,6 +31,29 @@ async function loadArticle() {
             title: `${post.titulo} | HS`,
             description: `Leia ${post.titulo} no editorial da HS.`,
             image: safeHttpUrl(post.imagem_capa),
+            canonical: `${SITE_CONFIG.siteUrl}/artigo.html?slug=${encodeURIComponent(slug)}`,
+            type: 'article',
+        });
+        const articleUrl = `${SITE_CONFIG.siteUrl}/artigo.html?slug=${encodeURIComponent(slug)}`;
+        updateStructuredData('article-structured-data', {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.titulo,
+            image: safeHttpUrl(post.imagem_capa),
+            datePublished: post.created_at,
+            dateModified: post.updated_at || post.created_at,
+            author: { '@type': 'Organization', name: post.autor || 'Equipe HS' },
+            publisher: { '@type': 'Organization', name: SITE_CONFIG.name },
+            mainEntityOfPage: articleUrl,
+        });
+        updateStructuredData('article-breadcrumbs', {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Início', item: `${SITE_CONFIG.siteUrl}/` },
+                { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_CONFIG.siteUrl}/blog.html` },
+                { '@type': 'ListItem', position: 3, name: post.titulo, item: articleUrl },
+            ],
         });
 
         // 3. Monta o HTML da página
@@ -40,7 +65,7 @@ async function loadArticle() {
                 </header>
 
                 <div class="article-cover">
-                    <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}">
+                    <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}" width="1600" height="900" loading="eager" fetchpriority="high" decoding="async">
                 </div>
 
                 <div class="article-body">
@@ -55,6 +80,8 @@ async function loadArticle() {
 
     } catch (error) {
         console.error("Erro:", error);
+        markPageAsNoIndex();
+        updateDocumentMeta({ title: `Artigo não encontrado | ${SITE_CONFIG.name}` });
         container.innerHTML = `
             <div class="container" style="padding: 15rem 0; text-align: center;">
                 <h2>Artigo não encontrado</h2>

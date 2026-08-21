@@ -1,16 +1,51 @@
+# Sistema operacional
 .DS_Store
+._*
 Thumbs.db
+Desktop.ini
+
+# Arquivos temporários e logs
 *.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+tmp/
+temp/
+
+# Configurações locais e segredos
 .env
 .env.*
+!.env.example
+
+# Dependências e saídas de ferramentas
 node_modules/
 dist/
+build/
+coverage/
+.eslintcache
+.parcel-cache/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Ferramentas locais de IA e editores
 .agents/
 .codex/
 .claude/
 .idea/
 .vscode/
+.fleet/
+.history/
+.zed/
 .mcp.json
+
+# Arquivos de configuração do shell do computador
 .bash_profile
 .bashrc
 .profile

@@ -26,7 +26,7 @@ async function carregarUltimosPosts() {
             return `
                 <a href="artigo.html?slug=${post.slug}" class="home-blog-card">
                     <div class="image-wrapper">
-                        <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}" loading="lazy" decoding="async">
+                        <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}" width="1600" height="900" loading="lazy" decoding="async">
                     </div>
                     <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-light);">
                         ${escapeHTML(dataFormatada)}

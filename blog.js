@@ -23,7 +23,7 @@ async function initBlog() {
             return `
                 <a href="artigo.html?slug=${post.slug}" class="blog-card">
                     <div class="blog-image-wrapper">
-                        <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}" loading="lazy" decoding="async">
+                        <img src="${escapeHTML(safeHttpUrl(post.imagem_capa))}" alt="${escapeHTML(post.titulo)}" width="1600" height="900" loading="lazy" decoding="async">
                     </div>
                     <div class="blog-meta">${escapeHTML(dataFormatada)} • Por ${escapeHTML(post.autor || 'Equipe HS')}</div>
                     <h3 class="blog-title">${escapeHTML(post.titulo)}</h3>

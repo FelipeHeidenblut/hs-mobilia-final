@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Curadoria de mobiliário atemporal da HS, com peças exclusivas, acabamentos refinados e soluções para ambientes com identidade." />
   <title>HS | Alta Decoração</title>
+  <link rel="canonical" href="https://hsmobilia.com.br/acervo.html" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HS" />
+  <meta property="og:title" content="HS | Alta Decoração" />
+  <meta property="og:description" content="Curadoria de mobiliário atemporal da HS, com peças exclusivas, acabamentos refinados e soluções para ambientes com identidade." />
+  <meta property="og:url" content="https://hsmobilia.com.br/acervo.html" />
+  <meta property="og:image" content="https://hsmobilia.com.br/imagens/06072026_RIZ3285.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" />
+  <link rel="preload" as="image" href="./imagens/06072026_RIZ3285.webp" fetchpriority="high" />
   <link rel="stylesheet" href="./global.css" />
   <link rel="stylesheet" href="./acervo.css" />
   <script type="module" src="./acervo.js" defer></script>
@@ -17,7 +30,7 @@
 
   <section class="hero">
     <div class="hero-content">
-      <h2>Conheça a nossa curadoria de mobiliário<br>atemporal para se inspirar.</h2>
+      <h1>Conheça a nossa curadoria de mobiliário<br>atemporal para se inspirar.</h1>
       <a href="#acervo" class="btn">Explorar Coleção</a>
     </div>
   </section>
@@ -27,7 +40,7 @@
     <!-- Cabeçalho Minimalista da Página -->
     <div
       style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; margin-bottom: 3rem;">
-      <h1 style="font-family: var(--font-secondary); font-size: 2rem; font-weight: 400; margin: 0;">Coleção</h1>
+      <h2 style="font-family: var(--font-secondary); font-size: 2rem; font-weight: 400; margin: 0;">Coleção</h2>
       <span
         style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--color-text-light);">Design
         Autoral</span>
@@ -45,7 +58,7 @@
       <aside class="filter-sidebar">
         <div class="filter-group-vertical">
           <label for="search-input">Buscar Peça</label>
-          <input type="text" id="search-input" placeholder="Ex: Sofá Float..." autocomplete="off" />
+          <input type="text" id="search-input" placeholder="Ex.: sofá retrátil" autocomplete="off" />
         </div>
 
         <div class="filter-group-vertical">
@@ -65,30 +78,6 @@
     </div>
 
     <div id="pagination-container" class="pagination"></div>
-
-    <section class="materiality-section" style="margin-top: 8rem; margin-bottom: 6rem;">
-      <div class="container">
-
-        <div class="materiality-header" style="text-align: center; margin-bottom: 4rem;">
-          <span
-            style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: #C68E58; display: block; margin-bottom: 1rem;">Acabamentos</span>
-          <h2
-            style="font-family: var(--font-secondary); font-size: 2.5rem; font-weight: 400; color: var(--color-text);">
-            Materialidade</h2>
-          <p style="color: var(--color-text-light); max-width: 600px; margin: 1rem auto 0; line-height: 1.6;">
-            Nossos móveis ganham vida através de matérias-primas selecionadas. 
-            Conheça algumas texturas e tons que compõem o nosso acervo autoral.
-          </p>
-        </div>
-
-        <nav id="texture-category-menu" class="texture-category-menu" aria-label="Tipos de textura"></nav>
-
-        <div id="textures-grid" class="textures-container" aria-live="polite"></div>
-
-        <div id="texture-pagination" class="pagination texture-pagination" aria-label="Paginação das texturas"></div>
-
-      </div>
-    </section>
 
   </main>
 

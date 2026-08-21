@@ -1,5 +1,5 @@
-import { supabase, getCurrentUser, fetchProfessionalProducts, fetchTexturas, getTechnicalFileUrl } from './supabase.js';
-import { escapeHTML, renderPublicProducts, safeHttpUrl } from './ui.js';
+import { supabase, getCurrentUser, getArchitectProfile, fetchProfessionalProducts, fetchTexturas, getTechnicalFileUrl } from './supabase.js';
+import { escapeHTML, filterProductsBySearch, getPriceRangeRows, renderPublicProducts, safeHttpUrl } from './ui.js';
 
 const elements = {
   feedback: document.getElementById('architect-feedback'),
@@ -17,7 +17,8 @@ const elements = {
   libraryTabs: document.querySelectorAll('[data-library-tab]'),
   furniturePanel: document.getElementById('furniture-library-panel'),
   texturesPanel: document.getElementById('textures-library-panel'),
-  textureSearch: document.getElementById('textureSearch'),
+  pricesPanel: document.getElementById('prices-library-panel'),
+  priceRanges: document.getElementById('professional-price-ranges'),
   textureMenu: document.getElementById('professional-texture-menu'),
   textureStatus: document.getElementById('professional-textures-status'),
   textureGroups: document.getElementById('professional-texture-groups'),
@@ -35,11 +36,27 @@ let activeLibrary = 'furniture';
 let activeTextureMaterial = '';
 const ITEMS_PER_PAGE = 9;
 const TEXTURES_PER_PAGE = 15;
+const HIDDEN_TEXTURE_MATERIALS = new Set(['laca', 'pintura epoxi', 'vidro']);
 
 function showFeedback(message, type = 'info') {
   if (!elements.feedback) return;
   elements.feedback.textContent = message;
   elements.feedback.dataset.type = type;
+}
+
+function normalizeInstagram(value) {
+  let username = String(value || '').trim();
+  if (/^https?:\/\//i.test(username)) {
+    try {
+      const url = new URL(username);
+      if (!/(^|\.)instagram\.com$/i.test(url.hostname)) return '';
+      username = url.pathname.split('/').filter(Boolean)[0] || '';
+    } catch {
+      return '';
+    }
+  }
+  username = username.replace(/^@/, '');
+  return /^[a-zA-Z0-9._]{1,30}$/.test(username) ? `@${username}` : '';
 }
 
 function showScreen(name) {
@@ -59,6 +76,24 @@ function textureMaterial(texture) {
   return String(texture.categoria || 'Outros materiais').trim() || 'Outros materiais';
 }
 
+function normalizedTextureMaterial(texture) {
+  return textureMaterial(texture)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR');
+}
+
+function textureDisplayName(texture) {
+  const material = textureMaterial(texture);
+  const nameWithoutNumbers = String(texture.nome || '')
+    .replace(/\b\d[\d./_-]*\b/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return nameWithoutNumbers.localeCompare(material, 'pt-BR', { sensitivity: 'base' }) === 0
+    ? ''
+    : nameWithoutNumbers;
+}
+
 function textureColumnCount(itemCount) {
   if (itemCount <= 5) return Math.max(1, itemCount);
   for (let columns = 5; columns >= 3; columns -= 1) {
@@ -72,11 +107,8 @@ function textureColumnCount(itemCount) {
 
 function getTexturePage(totalItems, page) {
   const totalPages = Math.max(1, Math.ceil(totalItems / TEXTURES_PER_PAGE));
-  const baseSize = Math.floor(totalItems / totalPages);
-  const largerPages = totalItems % totalPages;
-  const pageSize = baseSize + (page <= largerPages ? 1 : 0);
-  const start = (page - 1) * baseSize + Math.min(page - 1, largerPages);
-  return { start, end: start + pageSize, totalPages };
+  const start = (page - 1) * TEXTURES_PER_PAGE;
+  return { start, end: start + TEXTURES_PER_PAGE, totalPages };
 }
 
 function renderTexturePagination() {
@@ -110,6 +142,10 @@ function renderTexturePagination() {
 
 function updateLibrarySummary() {
   if (!elements.summary) return;
+  if (activeLibrary === 'prices') {
+    elements.summary.textContent = 'Consulte as faixas de investimento utilizadas na curadoria.';
+    return;
+  }
   if (activeLibrary === 'textures') {
     const total = filteredTextures.length;
     elements.summary.textContent = total === 1 ? '1 textura encontrada.' : `${total} texturas encontradas.`;
@@ -123,8 +159,7 @@ function updateLibrarySummary() {
 }
 
 function setLibraryTab(tabName) {
-  activeLibrary = tabName === 'textures' ? 'textures' : 'furniture';
-  const texturesActive = activeLibrary === 'textures';
+  activeLibrary = ['furniture', 'textures', 'prices'].includes(tabName) ? tabName : 'furniture';
 
   elements.libraryTabs.forEach((tab) => {
     const active = tab.dataset.libraryTab === activeLibrary;
@@ -133,9 +168,19 @@ function setLibraryTab(tabName) {
     tab.tabIndex = active ? 0 : -1;
   });
 
-  elements.furniturePanel?.classList.toggle('hidden', texturesActive);
-  elements.texturesPanel?.classList.toggle('hidden', !texturesActive);
+  elements.furniturePanel?.classList.toggle('hidden', activeLibrary !== 'furniture');
+  elements.texturesPanel?.classList.toggle('hidden', activeLibrary !== 'textures');
+  elements.pricesPanel?.classList.toggle('hidden', activeLibrary !== 'prices');
   updateLibrarySummary();
+}
+
+function renderPriceGuide() {
+  if (!elements.priceRanges) return;
+  elements.priceRanges.innerHTML = getPriceRangeRows().map(({ symbols, range }) => `
+    <tr>
+      <td class="price-guide__symbols">${escapeHTML(symbols)}</td>
+      <td>R$ ${escapeHTML(range)}</td>
+    </tr>`).join('');
 }
 
 function populateTextureMaterials() {
@@ -178,12 +223,13 @@ function renderTextureLibrary() {
       const cards = materialTextures
         .sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'))
         .map((texture) => {
-          const name = escapeHTML(texture.nome || 'Textura sem nome');
+          const displayName = escapeHTML(textureDisplayName(texture));
+          const materialName = escapeHTML(textureMaterial(texture));
           const imageUrl = safeHttpUrl(texture.imagem_url);
           const image = imageUrl
-            ? `<img src="${escapeHTML(imageUrl)}" alt="Amostra ${name}" loading="lazy" decoding="async">`
+            ? `<img src="${escapeHTML(imageUrl)}" alt="Amostra de ${materialName}" width="640" height="640" loading="lazy" decoding="async">`
             : '<span class="texture-card__placeholder">Imagem indisponível</span>';
-          const content = `<span class="texture-card__image">${image}</span><span class="texture-card__meta"><strong>${name}</strong>${imageUrl ? '<small>Abrir amostra ↗</small>' : ''}</span>`;
+          const content = `<span class="texture-card__image">${image}</span><span class="texture-card__meta">${displayName ? `<strong>${displayName}</strong>` : ''}${imageUrl ? '<small>Abrir amostra ↗</small>' : ''}</span>`;
           return imageUrl
             ? `<a class="texture-card" href="${escapeHTML(imageUrl)}" target="_blank" rel="noopener noreferrer">${content}</a>`
             : `<article class="texture-card">${content}</article>`;
@@ -199,16 +245,7 @@ function renderTextureLibrary() {
 }
 
 function applyTextureFilters() {
-  const search = elements.textureSearch?.value.toLocaleLowerCase('pt-BR').trim() || '';
-  filteredTextures = textures.filter((texture) => {
-    const matchesSearch = [texture.nome, texture.categoria]
-      .filter(Boolean)
-      .join(' ')
-      .toLocaleLowerCase('pt-BR')
-      .includes(search);
-    const matchesMaterial = textureMaterial(texture) === activeTextureMaterial;
-    return matchesSearch && matchesMaterial;
-  });
+  filteredTextures = textures.filter((texture) => textureMaterial(texture) === activeTextureMaterial);
   currentTexturePage = 1;
   renderTextureLibrary();
   updateLibrarySummary();
@@ -218,7 +255,8 @@ async function loadTextureLibrary() {
   if (!elements.textureStatus) return;
   elements.textureStatus.textContent = 'Carregando texturas e acabamentos...';
   try {
-    textures = await fetchTexturas() || [];
+    const availableTextures = await fetchTexturas() || [];
+    textures = availableTextures.filter((texture) => !HIDDEN_TEXTURE_MATERIALS.has(normalizedTextureMaterial(texture)));
     populateTextureMaterials();
     applyTextureFilters();
   } catch (error) {
@@ -276,17 +314,10 @@ async function renderPage() {
 }
 
 function applyFilters() {
-  const search = elements.search?.value.toLocaleLowerCase('pt-BR').trim() || '';
+  const search = elements.search?.value.trim() || '';
   const category = elements.category?.value || 'todos';
-  filteredProducts = products.filter((product) => {
-    const searchableText = [product.name, product.brand, product.category]
-      .filter(Boolean)
-      .join(' ')
-      .toLocaleLowerCase('pt-BR');
-    const matchesName = searchableText.includes(search);
-    const matchesCategory = category === 'todos' || product.category === category;
-    return matchesName && matchesCategory;
-  });
+  const productsInCategory = products.filter((product) => category === 'todos' || product.category === category);
+  filteredProducts = filterProductsBySearch(productsInCategory, search);
   currentPage = 1;
   renderPage();
   updateLibrarySummary();
@@ -319,6 +350,25 @@ async function checkSession() {
     return false;
   }
 
+  const profile = await getArchitectProfile();
+  if (!profile) {
+    showScreen('rejected');
+    showFeedback('Não foi possível localizar seu cadastro profissional.', 'error');
+    return false;
+  }
+
+  if (profile.status === 'pending') {
+    showScreen('pending');
+    showFeedback('Seu cadastro ainda está aguardando a aprovação da HS.', 'info');
+    return false;
+  }
+
+  if (profile.status !== 'approved') {
+    showScreen('rejected');
+    showFeedback('Este cadastro não possui acesso à área profissional.', 'error');
+    return false;
+  }
+
   showScreen('approved');
   showFeedback('', 'info');
   await loadLibrary();
@@ -328,11 +378,32 @@ async function checkSession() {
 elements.registerForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(elements.registerForm);
+  const registryType = String(formData.get('registry_type') || '').toUpperCase();
+  const registryNumber = String(formData.get('registry_number') || '').trim().toUpperCase();
+  const instagram = normalizeInstagram(formData.get('instagram'));
+
+  if (!['CAU', 'ABD'].includes(registryType) || !/^[A-Z0-9./-]{4,30}$/.test(registryNumber)) {
+    showFeedback('Informe um registro CAU ou ABD válido.', 'error');
+    return;
+  }
+  if (!instagram) {
+    showFeedback('Informe um perfil válido do Instagram, como @seuperfil.', 'error');
+    return;
+  }
+
   showFeedback('Criando sua conta...', 'info');
   const { data, error } = await supabase.auth.signUp({
     email: formData.get('email'),
     password: formData.get('password'),
-    options: { data: { full_name: formData.get('full_name'), account_type: 'architect' } },
+    options: {
+      data: {
+        full_name: String(formData.get('full_name') || '').trim(),
+        account_type: 'architect',
+        registry_type: registryType,
+        registry_number: registryNumber,
+        instagram,
+      },
+    },
   });
 
   if (error) {
@@ -342,10 +413,10 @@ elements.registerForm?.addEventListener('submit', async (event) => {
 
   elements.registerForm.reset();
   if (data.session) {
-    showFeedback('Cadastro concluído. Seu acesso já está liberado.', 'success');
+    showFeedback('Cadastro recebido. Seus dados serão analisados pela HS.', 'success');
     await checkSession();
   } else {
-    showFeedback('Confira seu e-mail para confirmar o cadastro. Depois, entre com sua senha.', 'success');
+    showFeedback('Cadastro recebido. Confirme seu e-mail; o acesso será liberado após a análise da HS.', 'success');
   }
 });
 
@@ -367,9 +438,11 @@ elements.loginForm?.addEventListener('submit', async (event) => {
     }
 
     elements.loginForm.reset();
-    showFeedback('Acesso liberado. Carregando a curadoria...', 'success');
+    showFeedback('Credenciais confirmadas. Validando seu cadastro...', 'info');
     const authenticated = await checkSession();
-    if (!authenticated) showFeedback('Não foi possível validar sua sessão. Tente entrar novamente.', 'error');
+    if (!authenticated && !document.getElementById('pending-shell')?.classList.contains('hidden')) {
+      showFeedback('Seu cadastro ainda está aguardando a aprovação da HS.', 'info');
+    }
   } catch (error) {
     console.error(error);
     showFeedback('Não foi possível conectar ao portal. Tente novamente.', 'error');
@@ -392,7 +465,6 @@ document.querySelectorAll('.auth-tab').forEach((tab) => {
 
 elements.search?.addEventListener('input', applyFilters);
 elements.category?.addEventListener('change', applyFilters);
-elements.textureSearch?.addEventListener('input', applyTextureFilters);
 elements.textureMenu?.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-professional-texture-category]');
   if (!button) return;
@@ -438,6 +510,7 @@ document.querySelectorAll('#signout-pending, #signout-rejected, #signout-approve
   });
 });
 
+renderPriceGuide();
 checkSession();
 
 supabase.auth.onAuthStateChange((event) => {

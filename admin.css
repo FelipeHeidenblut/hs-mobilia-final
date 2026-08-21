@@ -130,10 +130,33 @@
 }
 
 .action-btn--edit { color: #C68E58; }
+.action-btn--approve { color: #326b43; }
 .action-btn--delete { color: #d9534f; }
 .action-btn:hover { color: #fff; }
 .action-btn--edit:hover { background: #C68E58; }
+.action-btn--approve:hover { background: #326b43; }
 .action-btn--delete:hover { background: #d9534f; }
+
+.architects-admin-table {
+  min-width: 980px;
+}
+
+.architects-admin-table a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.architect-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-empty-value {
+  color: var(--color-text-light);
+  font-size: 0.75rem;
+}
 
 /* Formulário de Novo Produto no Admin */
 .admin-form-section {

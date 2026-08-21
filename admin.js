@@ -149,7 +149,7 @@ function renderAdminProducts() {
       
       <td style="padding: 1.5rem 0.5rem; vertical-align: middle;">
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="${escapeHTML(safeHttpUrl(product.image_url))}" alt="Foto de ${escapeHTML(product.name)}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; background: #f0f0f0; flex-shrink: 0;">
+          <img src="${escapeHTML(safeHttpUrl(product.image_url))}" alt="Foto de ${escapeHTML(product.name)}" width="60" height="60" loading="lazy" decoding="async" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; background: #f0f0f0; flex-shrink: 0;">
           <strong style="color: #1a1a1a; font-weight: 500;">${escapeHTML(product.name)}</strong>
         </div>
       </td>
@@ -359,23 +359,54 @@ async function loadArchitects() {
     return;
   }
 
-  architectsTable.innerHTML = data.map(arch => `
-    <tr>
-      <td><strong>${escapeHTML(arch.full_name)}</strong></td>
-      <td>${escapeHTML(arch.email)}</td>
-      <td>
-        <span class="status-badge ${arch.status}">
-          ${arch.status === 'pending' ? 'Finalizando' : arch.status === 'approved' ? 'Ativo' : 'Bloqueado'}
-        </span>
-      </td>
-      <td>
-        <span style="font-size: 0.7rem; color: var(--color-text-light);">
-          ${arch.status === 'approved' ? 'Acesso automático' : 'Entre em contato para reativar'}
-        </span>
-      </td>
-    </tr>
-  `).join('');
+  architectsTable.innerHTML = data.map((arch) => {
+    const status = ['pending', 'approved', 'rejected'].includes(arch.status) ? arch.status : 'pending';
+    const statusLabel = status === 'approved' ? 'Aprovado' : status === 'rejected' ? 'Bloqueado' : 'Pendente';
+    const registry = [arch.registry_type, arch.registry_number].filter(Boolean).join(' ');
+    const instagram = String(arch.instagram || '').trim();
+    const instagramUsername = instagram.replace(/^@/, '');
+    const instagramUrl = instagramUsername && /^[a-zA-Z0-9._]{1,30}$/.test(instagramUsername)
+      ? safeHttpUrl(`https://www.instagram.com/${instagramUsername}/`)
+      : '';
+    const actions = status === 'approved'
+      ? `<button type="button" class="action-btn action-btn--delete" data-architect-status="rejected" data-architect-id="${escapeHTML(arch.id)}">Bloquear</button>`
+      : `<button type="button" class="action-btn action-btn--approve" data-architect-status="approved" data-architect-id="${escapeHTML(arch.id)}">Aprovar</button>${status === 'pending' ? `<button type="button" class="action-btn action-btn--delete" data-architect-status="rejected" data-architect-id="${escapeHTML(arch.id)}">Recusar</button>` : ''}`;
+
+    return `
+      <tr>
+        <td><strong>${escapeHTML(arch.full_name || 'Não informado')}</strong></td>
+        <td>${escapeHTML(arch.email || '')}</td>
+        <td>${registry ? escapeHTML(registry) : '<span class="admin-empty-value">Não informado</span>'}</td>
+        <td>${instagramUrl ? `<a href="${escapeHTML(instagramUrl)}" target="_blank" rel="noopener noreferrer">${escapeHTML(instagram)}</a>` : '<span class="admin-empty-value">Não informado</span>'}</td>
+        <td><span class="status-badge ${status}">${statusLabel}</span></td>
+        <td><div class="architect-actions">${actions}</div></td>
+      </tr>`;
+  }).join('');
 }
+
+architectsTable?.addEventListener('click', async (event) => {
+  const button = event.target.closest('button[data-architect-status][data-architect-id]');
+  if (!button || button.disabled) return;
+
+  const nextStatus = button.dataset.architectStatus;
+  if (!['approved', 'rejected'].includes(nextStatus)) return;
+
+  button.disabled = true;
+  showFeedback(nextStatus === 'approved' ? 'Aprovando profissional...' : 'Atualizando acesso...', 'info');
+  const { error } = await supabase
+    .from('architects')
+    .update({ status: nextStatus })
+    .eq('id', button.dataset.architectId);
+
+  if (error) {
+    button.disabled = false;
+    showFeedback('Não foi possível atualizar o acesso do profissional.', 'error');
+    return;
+  }
+
+  showFeedback(nextStatus === 'approved' ? 'Profissional aprovado com sucesso.' : 'Acesso profissional bloqueado.', 'success');
+  await loadArchitects();
+});
 
 productsTable?.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-action]');
