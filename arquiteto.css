@@ -56,9 +56,17 @@
   display: none;
 }
 
-.architect-feedback[data-type="error"] { color: #a9453d; }
-.architect-feedback[data-type="success"] { color: #4a5d4e; }
-.architect-feedback[data-type="info"] { color: var(--color-accent); }
+.architect-feedback[data-type="error"] {
+  color: #a9453d;
+}
+
+.architect-feedback[data-type="success"] {
+  color: #4a5d4e;
+}
+
+.architect-feedback[data-type="info"] {
+  color: var(--color-accent);
+}
 
 .auth-shell {
   max-width: 520px;
@@ -262,11 +270,13 @@ body.is-professional-authenticated .header-inner {
 }
 
 .price-guide {
-  max-width: 820px;
+  width: 100%;
+  max-width: none;
 }
 
 .price-guide__heading {
-  max-width: 680px;
+  width: 100%;
+  max-width: none;
   margin-bottom: 3rem;
 }
 
@@ -379,7 +389,10 @@ body.is-professional-authenticated .header-inner {
   text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .professional-texture-menu button span {
@@ -436,15 +449,29 @@ body.is-professional-authenticated .header-inner {
 
 .texture-library-grid {
   display: grid;
-  justify-content: start;
+  justify-content: space-between;
   gap: 3rem 2rem;
 }
 
-.texture-library-grid[data-columns="1"] { grid-template-columns: minmax(0, 210px); }
-.texture-library-grid[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 210px)); }
-.texture-library-grid[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 210px)); }
-.texture-library-grid[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 210px)); }
-.texture-library-grid[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 210px)); }
+.texture-library-grid[data-columns="1"] {
+  grid-template-columns: minmax(0, 210px);
+}
+
+.texture-library-grid[data-columns="2"] {
+  grid-template-columns: repeat(2, minmax(0, 210px));
+}
+
+.texture-library-grid[data-columns="3"] {
+  grid-template-columns: repeat(3, minmax(0, 210px));
+}
+
+.texture-library-grid[data-columns="4"] {
+  grid-template-columns: repeat(4, minmax(0, 210px));
+}
+
+.texture-library-grid[data-columns="5"] {
+  grid-template-columns: repeat(5, minmax(0, 210px));
+}
 
 .texture-card {
   display: flex;
@@ -586,7 +613,6 @@ body.is-professional-authenticated .header-inner {
   #architect-products {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 }
 
 @media (max-width: 700px) {
