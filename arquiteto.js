@@ -865,3 +865,184 @@ document
         tab.dataset.authTab === 'login';
 
       document
+        .querySelectorAll('.auth-tab')
+        .forEach((item) => {
+          const active = item === tab;
+
+          item.classList.toggle(
+            'is-active',
+            active,
+          );
+
+          item.setAttribute(
+            'aria-selected',
+            String(active),
+          );
+        });
+
+      elements.loginForm?.classList.toggle(
+        'hidden',
+        !loginActive,
+      );
+
+      elements.registerForm?.classList.toggle(
+        'hidden',
+        loginActive,
+      );
+
+      (
+        loginActive
+          ? elements.loginForm
+          : elements.registerForm
+      )?.querySelector('input')?.focus();
+    });
+  });
+
+elements.search?.addEventListener(
+  'input',
+  applyFilters,
+);
+
+elements.category?.addEventListener(
+  'change',
+  applyFilters,
+);
+
+elements.textureMenu?.addEventListener(
+  'click',
+  (event) => {
+    const button = event.target.closest(
+      'button[data-professional-texture-category]',
+    );
+
+    if (!button) return;
+
+    activeTextureMaterial =
+      button.dataset.professionalTextureCategory;
+
+    elements.textureMenu
+      .querySelectorAll('button')
+      .forEach((item) => {
+        const active = item === button;
+
+        item.classList.toggle(
+          'is-active',
+          active,
+        );
+
+        item.setAttribute(
+          'aria-pressed',
+          String(active),
+        );
+      });
+
+    applyTextureFilters();
+  },
+);
+
+elements.texturePagination?.addEventListener(
+  'click',
+  (event) => {
+    const button = event.target.closest(
+      'button[data-texture-page]',
+    );
+
+    if (!button || button.disabled) return;
+
+    currentTexturePage = Number(
+      button.dataset.texturePage,
+    );
+
+    renderTextureLibrary();
+
+    elements.texturesPanel?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  },
+);
+
+elements.libraryTabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    setLibraryTab(tab.dataset.libraryTab);
+  });
+});
+
+elements.libraryTabs.forEach((tab, index) => {
+  tab.addEventListener('keydown', (event) => {
+    if (
+      !['ArrowLeft', 'ArrowRight'].includes(event.key)
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const direction =
+      event.key === 'ArrowRight' ? 1 : -1;
+
+    const targetIndex =
+      (
+        index
+        + direction
+        + elements.libraryTabs.length
+      ) % elements.libraryTabs.length;
+
+    const target =
+      elements.libraryTabs[targetIndex];
+
+    setLibraryTab(target.dataset.libraryTab);
+    target.focus();
+  });
+});
+
+elements.pagination?.addEventListener(
+  'click',
+  (event) => {
+    const button = event.target.closest(
+      'button[data-page]',
+    );
+
+    if (!button || button.disabled) return;
+
+    currentPage = Number(
+      button.dataset.page,
+    );
+
+    renderPage();
+
+    document
+      .getElementById('approved-shell')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+      });
+  },
+);
+
+document
+  .querySelectorAll(
+    '#signout-pending, #signout-rejected, #signout-approved',
+  )
+  .forEach((button) => {
+    button.addEventListener(
+      'click',
+      async () => {
+        await supabase.auth.signOut();
+
+        products = [];
+        textures = [];
+
+        showScreen('auth');
+      },
+    );
+  });
+
+renderPriceGuide();
+checkSession();
+
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT') {
+    showScreen('auth');
+  }
+});
+    
