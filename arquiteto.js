@@ -4,12 +4,16 @@ import {
   getArchitectProfile,
   fetchProfessionalProducts,
   fetchTexturas,
+  generateRoomPreview,
   getTechnicalFileUrl,
+  removeAiProjectAssets,
+  uploadAiProjectAsset,
 } from './supabase.js';
 
 import {
   escapeHTML,
   filterProductsBySearch,
+  getProductDisplayName,
   getPriceRangeRows,
   renderPublicProducts,
   safeHttpUrl,
@@ -32,11 +36,34 @@ const elements = {
   furniturePanel: document.getElementById('furniture-library-panel'),
   texturesPanel: document.getElementById('textures-library-panel'),
   pricesPanel: document.getElementById('prices-library-panel'),
+  generatorPanel: document.getElementById('generator-library-panel'),
   priceRanges: document.getElementById('professional-price-ranges'),
   textureMenu: document.getElementById('professional-texture-menu'),
   textureStatus: document.getElementById('professional-textures-status'),
   textureGroups: document.getElementById('professional-texture-groups'),
   texturePagination: document.getElementById('professional-texture-pagination'),
+  generatorForm: document.getElementById('room-generator-form'),
+  generatorRoomFile: document.getElementById('generator-room-file'),
+  generatorWorkspace: document.getElementById('generator-workspace'),
+  generatorStage: document.getElementById('generator-canvas-stage'),
+  generatorRoomPreview: document.getElementById('generator-room-preview'),
+  generatorProductOverlays: document.getElementById('generator-product-overlays'),
+  generatorCanvas: document.getElementById('generator-mask-canvas'),
+  generatorClearSelection: document.getElementById('generator-clear-selection'),
+  generatorProduct: document.getElementById('generator-product'),
+  generatorTexture: document.getElementById('generator-texture'),
+  generatorAddItem: document.getElementById('generator-add-item'),
+  generatorItems: document.getElementById('generator-items'),
+  generatorItemsCount: document.getElementById('generator-items-count'),
+  generatorQuality: document.getElementById('generator-quality'),
+  generatorInstructions: document.getElementById('generator-instructions'),
+  generatorConsent: document.getElementById('generator-consent'),
+  generatorSubmit: document.getElementById('generator-submit'),
+  generatorStatus: document.getElementById('generator-status'),
+  generatorResult: document.getElementById('generator-result'),
+  generatorResultImage: document.getElementById('generator-result-image'),
+  generatorDownload: document.getElementById('generator-download'),
+  generatorDemoNotice: document.getElementById('generator-demo-notice'),
 };
 
 let products = [];
@@ -48,9 +75,24 @@ let currentTexturePage = 1;
 let renderVersion = 0;
 let activeLibrary = 'furniture';
 let activeTextureMaterial = '';
+let generatorRoomFile = null;
+let generatorRoomObjectUrl = '';
+let generatorSelection = null;
+let generatorDrawStart = null;
+let generatorIsDrawing = false;
+let generatorItems = [];
 
 const ITEMS_PER_PAGE = 9;
 const TEXTURES_PER_PAGE = 15;
+const MAX_ROOM_FILE_SIZE = 12 * 1024 * 1024;
+const MIN_SELECTION_SIZE = 24;
+const MAX_GENERATOR_ITEMS = 4;
+const GENERATOR_ITEM_COLORS = [
+  '#ffffff',
+  '#d8b46a',
+  '#91b7a4',
+  '#c69aae',
+];
 const HIDDEN_TEXTURE_MATERIALS = new Set([
   'laca',
   'pintura epoxi',
@@ -222,6 +264,13 @@ function renderTexturePagination() {
 function updateLibrarySummary() {
   if (!elements.summary) return;
 
+  if (activeLibrary === 'generator') {
+    elements.summary.textContent =
+      'Crie um estudo visual com as peças e acabamentos da Curadoria HS.';
+
+    return;
+  }
+
   if (activeLibrary === 'prices') {
     elements.summary.textContent =
       'Consulte as faixas de investimento utilizadas na curadoria.';
@@ -251,6 +300,7 @@ function setLibraryTab(tabName) {
     'furniture',
     'textures',
     'prices',
+    'generator',
   ].includes(tabName)
     ? tabName
     : 'furniture';
@@ -276,6 +326,11 @@ function setLibraryTab(tabName) {
   elements.pricesPanel?.classList.toggle(
     'hidden',
     activeLibrary !== 'prices',
+  );
+
+  elements.generatorPanel?.classList.toggle(
+    'hidden',
+    activeLibrary !== 'generator',
   );
 
   updateLibrarySummary();
@@ -515,6 +570,503 @@ async function loadTextureLibrary() {
   }
 }
 
+function setGeneratorStatus(message, type = 'info') {
+  if (!elements.generatorStatus) return;
+
+  elements.generatorStatus.textContent = message;
+  elements.generatorStatus.dataset.type = type;
+}
+
+function populateGeneratorOptions() {
+  if (elements.generatorProduct) {
+    const selectedProduct = elements.generatorProduct.value;
+    const firstOption = new Option('Selecione uma peça', '');
+    const categories = new Map();
+
+    [...products]
+      .sort((a, b) => {
+        const categoryComparison = String(a.category || '')
+          .localeCompare(String(b.category || ''), 'pt-BR');
+
+        return categoryComparison || String(a.name || '')
+          .localeCompare(String(b.name || ''), 'pt-BR');
+      })
+      .forEach((product) => {
+        const category = String(product.category || 'Outras peças');
+
+        if (!categories.has(category)) {
+          categories.set(category, []);
+        }
+
+        categories.get(category).push(product);
+      });
+
+    const groups = [...categories.entries()].map(
+      ([category, categoryProducts]) => {
+        const group = document.createElement('optgroup');
+        group.label = category;
+
+        categoryProducts.forEach((product) => {
+          group.append(new Option(
+            getProductDisplayName(product),
+            String(product.id),
+          ));
+        });
+
+        return group;
+      },
+    );
+
+    elements.generatorProduct.replaceChildren(
+      firstOption,
+      ...groups,
+    );
+
+    if (products.some(
+      (product) => String(product.id) === selectedProduct,
+    )) {
+      elements.generatorProduct.value = selectedProduct;
+    }
+  }
+
+  if (elements.generatorTexture) {
+    const selectedTexture = elements.generatorTexture.value;
+    const firstOption = new Option('Selecione um acabamento', '');
+    const materials = new Map();
+
+    [...textures]
+      .sort((a, b) => {
+        const materialComparison = textureMaterial(a)
+          .localeCompare(textureMaterial(b), 'pt-BR');
+
+        return materialComparison || String(a.nome || '')
+          .localeCompare(String(b.nome || ''), 'pt-BR');
+      })
+      .forEach((texture) => {
+        const material = textureMaterial(texture);
+
+        if (!materials.has(material)) {
+          materials.set(material, []);
+        }
+
+        materials.get(material).push(texture);
+      });
+
+    const groups = [...materials.entries()].map(
+      ([material, materialTextures]) => {
+        const group = document.createElement('optgroup');
+        group.label = material;
+
+        materialTextures.forEach((texture, index) => {
+          const cleanName = textureDisplayName(texture);
+          const label = cleanName && cleanName !== material
+            ? `${material} — ${cleanName}`
+            : `${material} — Amostra ${index + 1}`;
+
+          group.append(new Option(label, String(texture.id)));
+        });
+
+        return group;
+      },
+    );
+
+    elements.generatorTexture.replaceChildren(
+      firstOption,
+      ...groups,
+    );
+
+    if (textures.some(
+      (texture) => String(texture.id) === selectedTexture,
+    )) {
+      elements.generatorTexture.value = selectedTexture;
+    }
+  }
+
+  renderGeneratorProductOverlays();
+  renderGeneratorItems();
+}
+
+function getGeneratorCanvasPoint(event) {
+  const canvas = elements.generatorCanvas;
+  const rect = canvas?.getBoundingClientRect();
+
+  if (!canvas || !rect?.width || !rect.height) {
+    return null;
+  }
+
+  return {
+    x: Math.max(0, Math.min(
+      canvas.width,
+      (event.clientX - rect.left) * canvas.width / rect.width,
+    )),
+    y: Math.max(0, Math.min(
+      canvas.height,
+      (event.clientY - rect.top) * canvas.height / rect.height,
+    )),
+  };
+}
+
+function normalizeGeneratorSelection(start, end) {
+  return {
+    x: Math.min(start.x, end.x),
+    y: Math.min(start.y, end.y),
+    width: Math.abs(end.x - start.x),
+    height: Math.abs(end.y - start.y),
+  };
+}
+
+function drawGeneratorSelection() {
+  const canvas = elements.generatorCanvas;
+  const context = canvas?.getContext('2d');
+
+  if (!canvas || !context) return;
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  const lineWidth = Math.max(3, canvas.width / 450);
+  const drawBox = (selection, index, draft = false) => {
+    const color = GENERATOR_ITEM_COLORS[
+      index % GENERATOR_ITEM_COLORS.length
+    ];
+    const fontSize = Math.max(14, canvas.width / 55);
+    const badgeSize = fontSize * 1.45;
+
+    context.fillStyle = draft
+      ? 'rgba(255, 255, 255, 0.22)'
+      : 'rgba(34, 34, 34, 0.08)';
+    context.strokeStyle = color;
+    context.lineWidth = lineWidth;
+    context.setLineDash(
+      draft ? [lineWidth * 2, lineWidth * 1.4] : [],
+    );
+    context.fillRect(
+      selection.x,
+      selection.y,
+      selection.width,
+      selection.height,
+    );
+    context.strokeRect(
+      selection.x,
+      selection.y,
+      selection.width,
+      selection.height,
+    );
+
+    context.setLineDash([]);
+    context.fillStyle = color;
+    context.fillRect(
+      selection.x,
+      selection.y,
+      badgeSize,
+      badgeSize,
+    );
+    context.fillStyle = color === '#ffffff' ? '#222222' : '#ffffff';
+    context.font = `600 ${fontSize}px Arial, sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(
+      String(index + 1),
+      selection.x + badgeSize / 2,
+      selection.y + badgeSize / 2,
+    );
+  };
+
+  generatorItems.forEach((item, index) => {
+    drawBox(item.selection, index);
+  });
+
+  if (generatorSelection) {
+    drawBox(generatorSelection, generatorItems.length, true);
+  }
+}
+
+function renderGeneratorProductOverlays() {
+  const container = elements.generatorProductOverlays;
+  const canvas = elements.generatorCanvas;
+
+  if (!container || !canvas?.width || !canvas.height) {
+    return;
+  }
+
+  const previews = [...generatorItems];
+  const draftProductId = elements.generatorProduct?.value;
+
+  if (generatorSelection && draftProductId) {
+    previews.push({
+      productId: draftProductId,
+      selection: generatorSelection,
+      draft: true,
+    });
+  }
+
+  const overlays = previews.flatMap((item) => {
+    const product = products.find(
+      (entry) => String(entry.id) === String(item.productId),
+    );
+    const imageUrl = safeHttpUrl(product?.image_url);
+
+    if (!imageUrl) return [];
+
+    const overlay = document.createElement('img');
+    overlay.className = `room-generator__product-overlay${
+      item.draft ? ' is-draft' : ''
+    }`;
+    overlay.src = imageUrl;
+    overlay.alt = '';
+    overlay.style.left = `${item.selection.x / canvas.width * 100}%`;
+    overlay.style.top = `${item.selection.y / canvas.height * 100}%`;
+    overlay.style.width = `${item.selection.width / canvas.width * 100}%`;
+    overlay.style.height = `${item.selection.height / canvas.height * 100}%`;
+
+    return [overlay];
+  });
+
+  container.replaceChildren(...overlays);
+}
+
+function generatorTextureLabel(texture) {
+  if (!texture) return 'Acabamento não identificado';
+
+  const material = textureMaterial(texture);
+  const name = textureDisplayName(texture);
+
+  return name && name !== material
+    ? `${material} — ${name}`
+    : material;
+}
+
+function renderGeneratorItems() {
+  if (elements.generatorItemsCount) {
+    elements.generatorItemsCount.textContent =
+      `${generatorItems.length} de ${MAX_GENERATOR_ITEMS}`;
+  }
+
+  if (elements.generatorAddItem) {
+    elements.generatorAddItem.disabled =
+      generatorItems.length >= MAX_GENERATOR_ITEMS;
+  }
+
+  if (!elements.generatorItems) return;
+
+  const itemNodes = generatorItems.map((item, index) => {
+    const product = products.find(
+      (entry) => String(entry.id) === String(item.productId),
+    );
+    const texture = textures.find(
+      (entry) => String(entry.id) === String(item.textureId),
+    );
+    const card = document.createElement('article');
+    card.className = 'room-generator__item';
+    card.setAttribute('role', 'listitem');
+    card.innerHTML = `
+      <span class="room-generator__item-number">${index + 1}</span>
+      <div class="room-generator__item-copy">
+        <strong>${escapeHTML(getProductDisplayName(product || {}))}</strong>
+        <span>${escapeHTML(generatorTextureLabel(texture))}</span>
+      </div>
+      <button class="room-generator__item-remove" type="button" data-generator-remove-item="${index}">Remover</button>
+    `;
+
+    return card;
+  });
+
+  elements.generatorItems.replaceChildren(...itemNodes);
+}
+
+function addGeneratorItem({ silent = false } = {}) {
+  if (generatorItems.length >= MAX_GENERATOR_ITEMS) {
+    if (!silent) {
+      setGeneratorStatus(
+        `O limite é de ${MAX_GENERATOR_ITEMS} móveis por geração.`,
+        'error',
+      );
+    }
+    return false;
+  }
+
+  const productId = elements.generatorProduct?.value;
+  const textureId = elements.generatorTexture?.value;
+
+  if (!productId || !textureId || !generatorSelection) {
+    if (!silent) {
+      setGeneratorStatus(
+        'Selecione o móvel e o acabamento e marque sua posição na imagem.',
+        'error',
+      );
+    }
+    return false;
+  }
+
+  generatorItems.push({
+    productId,
+    textureId,
+    selection: { ...generatorSelection },
+  });
+
+  generatorSelection = null;
+  generatorDrawStart = null;
+  generatorIsDrawing = false;
+  elements.generatorProduct.value = '';
+  elements.generatorTexture.value = '';
+  drawGeneratorSelection();
+  renderGeneratorProductOverlays();
+  renderGeneratorItems();
+
+  if (!silent) {
+    setGeneratorStatus(
+      generatorItems.length < MAX_GENERATOR_ITEMS
+        ? `Móvel ${generatorItems.length} adicionado. Você pode marcar outra peça ou gerar a ambientação.`
+        : 'Composição completa. Agora você pode gerar a ambientação.',
+      'success',
+    );
+  }
+
+  return true;
+}
+
+function clearGeneratorSelection() {
+  generatorSelection = null;
+  generatorDrawStart = null;
+  generatorIsDrawing = false;
+  drawGeneratorSelection();
+  renderGeneratorProductOverlays();
+}
+
+function resetGenerator() {
+  if (generatorRoomObjectUrl) {
+    URL.revokeObjectURL(generatorRoomObjectUrl);
+  }
+
+  generatorRoomFile = null;
+  generatorRoomObjectUrl = '';
+  generatorItems = [];
+  clearGeneratorSelection();
+  elements.generatorForm?.reset();
+  elements.generatorWorkspace?.classList.add('hidden');
+  elements.generatorResult?.classList.add('hidden');
+  elements.generatorDemoNotice?.classList.add('hidden');
+
+  if (elements.generatorRoomPreview) {
+    elements.generatorRoomPreview.removeAttribute('src');
+  }
+
+  if (elements.generatorResultImage) {
+    elements.generatorResultImage.removeAttribute('src');
+  }
+
+  renderGeneratorItems();
+  setGeneratorStatus('');
+}
+
+function loadGeneratorRoomFile(file) {
+  if (!file) return;
+
+  const allowedTypes = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  ]);
+
+  if (!allowedTypes.has(file.type)) {
+    elements.generatorRoomFile.value = '';
+    setGeneratorStatus(
+      'Envie uma imagem JPG, PNG ou WebP.',
+      'error',
+    );
+    return;
+  }
+
+  if (file.size > MAX_ROOM_FILE_SIZE) {
+    elements.generatorRoomFile.value = '';
+    setGeneratorStatus(
+      'A imagem deve ter no máximo 12 MB.',
+      'error',
+    );
+    return;
+  }
+
+  if (generatorRoomObjectUrl) {
+    URL.revokeObjectURL(generatorRoomObjectUrl);
+  }
+
+  generatorRoomFile = file;
+  generatorRoomObjectUrl = URL.createObjectURL(file);
+  generatorItems = [];
+  clearGeneratorSelection();
+  renderGeneratorItems();
+  elements.generatorResult?.classList.add('hidden');
+  elements.generatorRoomPreview.src = generatorRoomObjectUrl;
+  setGeneratorStatus('Carregando imagem...', 'info');
+}
+
+function generatorCanvasToBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Não foi possível preparar a marcação.'));
+        return;
+      }
+
+      resolve(blob);
+    }, 'image/png');
+  });
+}
+
+async function createGeneratorMask(items) {
+  const sourceCanvas = elements.generatorCanvas;
+
+  if (!sourceCanvas || !items.length) {
+    throw new Error('Adicione ao menos um móvel ao projeto.');
+  }
+
+  const mask = document.createElement('canvas');
+  mask.width = sourceCanvas.width;
+  mask.height = sourceCanvas.height;
+  const context = mask.getContext('2d');
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, mask.width, mask.height);
+
+  items.forEach((item) => {
+    context.clearRect(
+      Math.floor(item.selection.x),
+      Math.floor(item.selection.y),
+      Math.ceil(item.selection.width),
+      Math.ceil(item.selection.height),
+    );
+  });
+
+  return generatorCanvasToBlob(mask);
+}
+
+function generatorFileExtension(file) {
+  const extensions = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+  };
+
+  return extensions[file?.type] || 'jpg';
+}
+
+function createGeneratorJobId() {
+  if (typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = [...bytes]
+    .map((byte) => byte.toString(16).padStart(2, '0'));
+
+  return [
+    hex.slice(0, 4).join(''),
+    hex.slice(4, 6).join(''),
+    hex.slice(6, 8).join(''),
+    hex.slice(8, 10).join(''),
+    hex.slice(10).join(''),
+  ].join('-');
+}
+
 function renderPagination() {
   if (!elements.pagination) return;
 
@@ -649,6 +1201,7 @@ async function loadLibrary() {
   }
 
   await loadTextureLibrary();
+  populateGeneratorOptions();
 }
 
 async function checkSession() {
@@ -701,6 +1254,304 @@ async function checkSession() {
 
   return true;
 }
+
+elements.generatorRoomFile?.addEventListener('change', () => {
+  loadGeneratorRoomFile(elements.generatorRoomFile.files?.[0]);
+});
+
+elements.generatorRoomPreview?.addEventListener('load', () => {
+  const image = elements.generatorRoomPreview;
+  const canvas = elements.generatorCanvas;
+
+  if (!image?.naturalWidth || !image.naturalHeight || !canvas) {
+    setGeneratorStatus('Não foi possível ler esta imagem.', 'error');
+    return;
+  }
+
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  elements.generatorStage.style.minHeight = '0';
+  elements.generatorWorkspace?.classList.remove('hidden');
+  generatorItems = [];
+  clearGeneratorSelection();
+  renderGeneratorItems();
+  setGeneratorStatus(
+    'Imagem pronta. Selecione uma peça e arraste sobre o ambiente para marcar sua posição.',
+    'success',
+  );
+});
+
+elements.generatorRoomPreview?.addEventListener('error', () => {
+  generatorRoomFile = null;
+  elements.generatorWorkspace?.classList.add('hidden');
+  setGeneratorStatus('Não foi possível abrir esta imagem.', 'error');
+});
+
+elements.generatorCanvas?.addEventListener('pointerdown', (event) => {
+  if (generatorItems.length >= MAX_GENERATOR_ITEMS) {
+    setGeneratorStatus(
+      `O limite é de ${MAX_GENERATOR_ITEMS} móveis por geração.`,
+      'error',
+    );
+    return;
+  }
+
+  const point = getGeneratorCanvasPoint(event);
+  if (!point) return;
+
+  event.preventDefault();
+  generatorIsDrawing = true;
+  generatorDrawStart = point;
+  generatorSelection = {
+    x: point.x,
+    y: point.y,
+    width: 0,
+    height: 0,
+  };
+  elements.generatorCanvas.setPointerCapture?.(event.pointerId);
+  drawGeneratorSelection();
+});
+
+elements.generatorCanvas?.addEventListener('pointermove', (event) => {
+  if (!generatorIsDrawing || !generatorDrawStart) return;
+
+  const point = getGeneratorCanvasPoint(event);
+  if (!point) return;
+
+  event.preventDefault();
+  generatorSelection = normalizeGeneratorSelection(
+    generatorDrawStart,
+    point,
+  );
+  drawGeneratorSelection();
+  renderGeneratorProductOverlays();
+});
+
+function finishGeneratorSelection(event) {
+  if (!generatorIsDrawing) return;
+
+  const point = getGeneratorCanvasPoint(event);
+
+  if (point && generatorDrawStart) {
+    generatorSelection = normalizeGeneratorSelection(
+      generatorDrawStart,
+      point,
+    );
+  }
+
+  generatorIsDrawing = false;
+  generatorDrawStart = null;
+
+  if (
+    !generatorSelection
+    || generatorSelection.width < MIN_SELECTION_SIZE
+    || generatorSelection.height < MIN_SELECTION_SIZE
+  ) {
+    clearGeneratorSelection();
+    setGeneratorStatus(
+      'A marcação ficou pequena demais. Arraste para selecionar uma área maior.',
+      'error',
+    );
+    return;
+  }
+
+  drawGeneratorSelection();
+  renderGeneratorProductOverlays();
+  setGeneratorStatus(
+    'Posição marcada. Clique em “Adicionar móvel ao projeto”.',
+    'success',
+  );
+}
+
+elements.generatorCanvas?.addEventListener(
+  'pointerup',
+  finishGeneratorSelection,
+);
+
+elements.generatorCanvas?.addEventListener(
+  'pointercancel',
+  finishGeneratorSelection,
+);
+
+elements.generatorClearSelection?.addEventListener('click', () => {
+  clearGeneratorSelection();
+  setGeneratorStatus(
+    'Marcação removida. Arraste sobre a imagem para selecionar outra área.',
+    'info',
+  );
+});
+
+elements.generatorProduct?.addEventListener(
+  'change',
+  renderGeneratorProductOverlays,
+);
+
+elements.generatorAddItem?.addEventListener('click', () => {
+  addGeneratorItem();
+});
+
+elements.generatorItems?.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-generator-remove-item]');
+
+  if (!button) return;
+
+  const index = Number(button.dataset.generatorRemoveItem);
+
+  if (!Number.isInteger(index) || !generatorItems[index]) return;
+
+  generatorItems.splice(index, 1);
+  drawGeneratorSelection();
+  renderGeneratorProductOverlays();
+  renderGeneratorItems();
+  setGeneratorStatus(
+    'Móvel removido da composição.',
+    'info',
+  );
+});
+
+elements.generatorForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  if (!generatorRoomFile) {
+    setGeneratorStatus('Escolha uma imagem do ambiente.', 'error');
+    return;
+  }
+
+  const hasDraftItem = Boolean(
+    generatorSelection
+    || elements.generatorProduct?.value
+    || elements.generatorTexture?.value,
+  );
+
+  if (hasDraftItem && !addGeneratorItem({ silent: true })) {
+    setGeneratorStatus(
+      'Complete o móvel atual: selecione peça e acabamento e marque sua posição.',
+      'error',
+    );
+    return;
+  }
+
+  if (!generatorItems.length) {
+    setGeneratorStatus('Adicione ao menos um móvel ao projeto.', 'error');
+    return;
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    setGeneratorStatus(
+      'Sua sessão expirou. Entre novamente para continuar.',
+      'error',
+    );
+    return;
+  }
+
+  const canvas = elements.generatorCanvas;
+  const jobId = createGeneratorJobId();
+  const roomPath = `${user.id}/${jobId}/room.${generatorFileExtension(generatorRoomFile)}`;
+  const maskPath = `${user.id}/${jobId}/mask.png`;
+
+  elements.generatorSubmit.disabled = true;
+  elements.generatorResult?.classList.add('hidden');
+  setGeneratorStatus(
+    'Preparando os arquivos do projeto...',
+    'info',
+  );
+
+  try {
+    const mask = await createGeneratorMask(generatorItems);
+
+    await Promise.all([
+      uploadAiProjectAsset(roomPath, generatorRoomFile),
+      uploadAiProjectAsset(maskPath, mask),
+    ]);
+
+    setGeneratorStatus(
+      'Gerando o estudo visual. Isso pode levar alguns minutos...',
+      'info',
+    );
+
+    const items = generatorItems.map((item) => ({
+      productId: item.productId,
+      textureId: item.textureId,
+      placement: {
+        x: Number((item.selection.x / canvas.width).toFixed(4)),
+        y: Number((item.selection.y / canvas.height).toFixed(4)),
+        width: Number((item.selection.width / canvas.width).toFixed(4)),
+        height: Number((item.selection.height / canvas.height).toFixed(4)),
+      },
+    }));
+
+    const result = await generateRoomPreview({
+      jobId,
+      items,
+      roomPath,
+      maskPath,
+      original: {
+        width: canvas.width,
+        height: canvas.height,
+      },
+      quality: elements.generatorQuality?.value || 'draft',
+      instructions: elements.generatorInstructions?.value.trim() || '',
+    });
+
+    const resultUrl = safeHttpUrl(result?.resultUrl);
+
+    if (!resultUrl) {
+      throw new Error('O serviço não retornou uma imagem válida.');
+    }
+
+    elements.generatorResultImage.src = resultUrl;
+    elements.generatorDownload.href = resultUrl;
+    elements.generatorDownload.download = `ambientacao-hs-${jobId}.png`;
+    elements.generatorDemoNotice?.classList.toggle(
+      'hidden',
+      !result.demo,
+    );
+    elements.generatorResult?.classList.remove('hidden');
+    setGeneratorStatus(
+      result.demo
+        ? 'Demonstração concluída. Configure uma API para gerar a ambientação real.'
+        : 'Ambientação gerada com sucesso.',
+      'success',
+    );
+    elements.generatorResult?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  } catch (error) {
+    console.error('Não foi possível gerar a ambientação:', error);
+
+    try {
+      await removeAiProjectAssets([
+        roomPath,
+        maskPath,
+      ]);
+    } catch (cleanupError) {
+      console.warn(
+        'Não foi possível remover os arquivos da tentativa:',
+        cleanupError,
+      );
+    }
+
+    const message = String(error?.message || '');
+    const setupMissing = [
+      'GENERATOR_SETUP_REQUIRED',
+      'FUNCTION_NOT_FOUND',
+    ].includes(error?.code)
+      || /bucket not found|no such bucket|function not found|status.*404/i
+        .test(message);
+
+    setGeneratorStatus(
+      setupMissing
+        ? 'O gerador ainda não foi ativado no Supabase. Aplique a migration e publique a função antes do teste.'
+        : message || 'Não foi possível gerar a ambientação. Tente novamente em alguns instantes.',
+      'error',
+    );
+  } finally {
+    elements.generatorSubmit.disabled = false;
+  }
+});
 
 elements.registerForm?.addEventListener(
   'submit',
@@ -1031,6 +1882,7 @@ document
 
         products = [];
         textures = [];
+        resetGenerator();
 
         showScreen('auth');
       },
@@ -1038,6 +1890,7 @@ document
   });
 
 renderPriceGuide();
+setLibraryTab(activeLibrary);
 checkSession();
 
 supabase.auth.onAuthStateChange((event) => {
@@ -1045,4 +1898,3 @@ supabase.auth.onAuthStateChange((event) => {
     showScreen('auth');
   }
 });
-    

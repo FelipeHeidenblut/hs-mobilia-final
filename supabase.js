@@ -141,3 +141,58 @@ export async function getTechnicalFileUrl(value) {
   if (error) throw error;
   return data.signedUrl;
 }
+
+export async function uploadAiProjectAsset(path, file) {
+  const { error } = await supabase.storage
+    .from('ai-projects')
+    .upload(path, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false,
+    });
+
+  if (error) throw error;
+
+  return path;
+}
+
+export async function removeAiProjectAssets(paths) {
+  const safePaths = (paths || []).filter(Boolean);
+  if (!safePaths.length) return;
+
+  const { error } = await supabase.storage
+    .from('ai-projects')
+    .remove(safePaths);
+
+  if (error) throw error;
+}
+
+export async function generateRoomPreview(payload) {
+  const { data, error } = await supabase.functions.invoke(
+    'generate-room-preview',
+    { body: payload },
+  );
+
+  if (!error) return data;
+
+  let message = error.message
+    || 'Não foi possível chamar o gerador.';
+  let code = 'FUNCTION_REQUEST_FAILED';
+  let status = 0;
+
+  if (error.context instanceof Response) {
+    status = error.context.status;
+
+    try {
+      const details = await error.context.clone().json();
+      message = details?.error || message;
+      code = details?.code || code;
+    } catch {
+      // Mantém a mensagem original quando a resposta não contém JSON.
+    }
+  }
+
+  const functionError = new Error(message);
+  functionError.code = code;
+  functionError.status = status;
+  throw functionError;
+}

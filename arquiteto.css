@@ -609,9 +609,395 @@ body.is-professional-authenticated .header-inner {
   margin-top: 3.5rem;
 }
 
+.room-generator__heading {
+  max-width: 760px;
+  margin-bottom: 3rem;
+}
+
+.room-generator__heading h2,
+.room-generator__result h3 {
+  margin: 0.8rem 0 1rem;
+  font-family: var(--font-secondary);
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.room-generator__heading p,
+.room-generator__canvas-actions p,
+.room-generator__disclaimer {
+  color: var(--color-text-light);
+  line-height: 1.7;
+}
+
+.room-generator__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.room-generator__visual,
+.room-generator__options {
+  min-width: 0;
+}
+
+.room-generator__upload {
+  display: flex;
+  min-height: 180px;
+  padding: 2rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: 1px dashed #aaa69d;
+  background: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.room-generator__upload strong {
+  font-family: var(--font-secondary);
+  font-size: 1.55rem;
+  font-weight: 400;
+}
+
+.room-generator__upload > span:not(.btn) {
+  color: var(--color-text-light);
+  font-size: 0.72rem;
+}
+
+.room-generator__upload .btn {
+  margin-top: 0.6rem;
+}
+
+.room-generator__workspace {
+  margin-top: 1.5rem;
+}
+
+.room-generator__canvas-stage {
+  position: relative;
+  min-height: 280px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: #e9e7e2;
+  touch-action: none;
+  user-select: none;
+}
+
+#generator-room-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 680px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.room-generator__product-overlays {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.room-generator__product-overlay {
+  position: absolute;
+  display: block;
+  object-fit: contain;
+  opacity: 0.66;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.room-generator__product-overlay.is-draft {
+  opacity: 0.82;
+}
+
+#generator-mask-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.room-generator__canvas-actions {
+  display: flex;
+  padding-top: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.room-generator__canvas-actions p {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.room-generator__canvas-actions button {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.room-generator__options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.room-generator__options > label:not(.room-generator__consent),
+.room-generator__item-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.room-generator__options label > span:first-child {
+  font-size: 0.64rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.room-generator__options select,
+.room-generator__options textarea {
+  width: 100%;
+  padding: 0.8rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+}
+
+.room-generator__options textarea {
+  min-height: 112px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.room-generator__field-help {
+  color: var(--color-text-light);
+  font-size: 0.62rem;
+  line-height: 1.55;
+}
+
+.room-generator__options select:focus,
+.room-generator__options textarea:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.room-generator__item-editor {
+  display: flex;
+  padding: 1.3rem;
+  flex-direction: column;
+  gap: 1.2rem;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.room-generator__item-editor > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.room-generator__item-editor > header span {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.room-generator__item-editor > header small {
+  color: var(--color-text-light);
+  font-size: 0.64rem;
+}
+
+.room-generator__add-item {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-text);
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 0.63rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.room-generator__add-item:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.room-generator__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.room-generator__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.9rem;
+  padding: 0.9rem 0;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.room-generator__item-number {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-text);
+  color: #fff;
+  font-size: 0.66rem;
+}
+
+.room-generator__item-copy {
+  min-width: 0;
+}
+
+.room-generator__item-copy strong,
+.room-generator__item-copy span {
+  display: block;
+}
+
+.room-generator__item-copy strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-generator__item-copy span {
+  margin-top: 0.2rem;
+  color: var(--color-text-light);
+  font-size: 0.64rem;
+}
+
+.room-generator__item-remove {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--color-text-light);
+  font-family: inherit;
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.room-generator__consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  align-items: start;
+  color: var(--color-text-light);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.room-generator__consent input {
+  margin-top: 0.15rem;
+  accent-color: var(--color-text);
+}
+
+.room-generator__options .btn {
+  width: 100%;
+  margin: 0;
+  background: var(--color-text);
+  color: #fff;
+}
+
+.room-generator__options .btn:hover {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.room-generator__status {
+  min-height: 1.3rem;
+  margin: -0.7rem 0 0;
+  color: var(--color-text-light);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.room-generator__status[data-type="error"] {
+  color: #a9453d;
+}
+
+.room-generator__status[data-type="success"] {
+  color: #4a5d4e;
+}
+
+.room-generator__result {
+  margin-top: 5rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.room-generator__result > header {
+  display: flex;
+  margin-bottom: 1.5rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.room-generator__result h3 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.room-generator__result > img {
+  display: block;
+  width: 100%;
+  max-height: 780px;
+  object-fit: contain;
+  background: #e9e7e2;
+}
+
+.room-generator__demo-notice {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #c9b995;
+  background: #f6f0e1;
+  color: #665a3e;
+  font-size: 0.72rem;
+}
+
+.room-generator__disclaimer {
+  margin-top: 1rem;
+  font-size: 0.68rem;
+}
+
 @media (max-width: 900px) {
   #architect-products {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .room-generator__layout {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -683,5 +1069,24 @@ body.is-professional-authenticated .header-inner {
 
   .texture-card__meta {
     align-items: center;
+  }
+
+  .room-generator__heading {
+    margin-bottom: 2rem;
+  }
+
+  .room-generator__upload {
+    min-height: 150px;
+    padding: 1.5rem;
+  }
+
+  .room-generator__canvas-stage {
+    min-height: 180px;
+  }
+
+  .room-generator__canvas-actions,
+  .room-generator__result > header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

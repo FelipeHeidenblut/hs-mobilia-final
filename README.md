@@ -37,6 +37,7 @@ Antes de publicar esta versão:
 5. Em Authentication > URL Configuration, configure a URL publicada do site e os redirects permitidos.
 6. Execute `supabase/migrations/004_restore_manual_architect_approval.sql` para adicionar CAU/ABD, Instagram e restaurar a aprovação manual.
 7. Teste cadastro, confirmação de e-mail, aprovação pelo painel administrativo e acesso aos arquivos com uma conta de teste.
+8. Para ativar o gerador de ambientações, siga a configuração abaixo.
 
 Se o acervo responder com `PGRST205` para `public_products`, execute também
 `supabase/migrations/002_restore_public_catalog.sql`. Essa migration recria a view pública e atualiza o cache da API.
@@ -54,6 +55,58 @@ A chave `anon` no navegador é pública por definição. A proteção dos dados 
 - Produtos, acabamentos, profissionais e artigos continuam sendo gerenciados pelo Supabase/painel.
 
 Não coloque uma chave `service_role` em nenhum arquivo deste projeto.
+
+## Gerador de ambientações
+
+O Portal do Profissional possui um gerador experimental em que o arquiteto envia a imagem do ambiente e monta uma composição com até quatro móveis. Cada peça recebe posição e acabamento próprios, mas toda a composição é enviada em uma única geração.
+
+A integração usa uma Supabase Edge Function para que a chave do provedor de IA nunca seja enviada ao navegador nem publicada no GitHub. Por padrão, a função trabalha em modo de demonstração: valida e registra todo o fluxo, mas devolve a própria foto do ambiente sem consumir uma API.
+
+### Ativação inicial
+
+1. Execute `supabase/migrations/005_ai_room_generator.sql` no SQL Editor do Supabase.
+2. Publique a função:
+
+```bash
+npx supabase functions deploy generate-room-preview \
+  --use-api \
+  --project-ref kuymrkdcjejhhjtsrnaa
+```
+
+Sem outros segredos, o modo `demo` já estará ativo. O limite padrão é de 10 solicitações por profissional por dia. Ele pode ser alterado com:
+
+```bash
+npx supabase secrets set AI_DAILY_LIMIT=10 \
+  --project-ref kuymrkdcjejhhjtsrnaa
+```
+
+### Pollinations
+
+A função inclui um adaptador para o [endpoint OpenAI-compatible de edição de imagens da Pollinations](https://github.com/pollinations/pollinations/blob/main/APIDOCS.md). Crie a chave diretamente no provedor e configure-a somente nos segredos do Supabase:
+
+```bash
+npx supabase secrets set \
+  IMAGE_API_PROVIDER=pollinations \
+  IMAGE_API_KEY="sua-chave-pollinations" \
+  IMAGE_API_BASE_URL=https://gen.pollinations.ai/v1 \
+  IMAGE_API_MODEL=klein \
+  --project-ref kuymrkdcjejhhjtsrnaa
+```
+
+Antes de usar fotos reais de clientes, revise os termos, limites, retenção de arquivos e política de privacidade do provedor escolhido. Uma API gratuita pode ser adequada para protótipos, mas não garante disponibilidade ou confidencialidade para uso comercial.
+
+### OpenAI
+
+Para trocar o provedor sem alterar o frontend, use uma chave compatível com a [API de geração e edição de imagens da OpenAI](https://developers.openai.com/api/docs/guides/image-generation):
+
+```bash
+supabase secrets set IMAGE_API_PROVIDER=openai
+supabase secrets set IMAGE_API_KEY=sua-chave
+supabase secrets set IMAGE_API_BASE_URL=https://api.openai.com/v1
+supabase secrets set IMAGE_API_MODEL=gpt-image-2
+```
+
+As fotos, máscaras e resultados ficam no bucket privado `ai-projects`. A migration limita o acesso ao próprio profissional aprovado e registra as solicitações em `ai_generation_jobs`.
 
 ## Atualizar o sitemap
 

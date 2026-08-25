@@ -122,6 +122,7 @@
           <button id="furniture-library-tab" class="library-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="furniture-library-panel" data-library-tab="furniture">Mobiliário</button>
           <button id="textures-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="textures-library-panel" data-library-tab="textures">Texturas e acabamentos</button>
           <button id="prices-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="prices-library-panel" data-library-tab="prices">Instruções de investimento</button>
+          <button id="generator-library-tab" class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="generator-library-panel" data-library-tab="generator">Simular ambiente</button>
         </nav>
 
         <div id="furniture-library-panel" class="library-panel" role="tabpanel" aria-labelledby="furniture-library-tab">
@@ -170,6 +171,103 @@
                 <tbody id="professional-price-ranges"></tbody>
               </table>
             </div>
+          </section>
+        </div>
+
+        <div id="generator-library-panel" class="library-panel hidden" role="tabpanel" aria-labelledby="generator-library-tab">
+          <section class="room-generator" aria-labelledby="room-generator-title">
+            <header class="room-generator__heading">
+              <span class="professional-eyebrow">Estudo visual com IA</span>
+              <h2 id="room-generator-title">Simular móveis no ambiente</h2>
+              <p>Envie uma imagem do projeto e monte uma composição com até quatro peças e acabamentos da Curadoria HS em uma única geração.</p>
+            </header>
+
+            <form id="room-generator-form" class="room-generator__form">
+              <div class="room-generator__layout">
+                <div class="room-generator__visual">
+                  <label class="room-generator__upload" for="generator-room-file">
+                    <strong>Imagem do ambiente</strong>
+                    <span>JPG, PNG ou WebP de até 12 MB</span>
+                    <span class="btn btn-dark">Escolher imagem</span>
+                  </label>
+                  <input id="generator-room-file" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" required>
+
+                  <div id="generator-workspace" class="room-generator__workspace hidden">
+                    <div id="generator-canvas-stage" class="room-generator__canvas-stage">
+                      <img id="generator-room-preview" alt="Prévia do ambiente enviado">
+                      <div id="generator-product-overlays" class="room-generator__product-overlays" aria-hidden="true"></div>
+                      <canvas id="generator-mask-canvas" aria-label="Marque a região onde o móvel deverá ser inserido"></canvas>
+                    </div>
+                    <div class="room-generator__canvas-actions">
+                      <p>Selecione uma peça, arraste para marcar sua posição e depois adicione-a ao projeto.</p>
+                      <button id="generator-clear-selection" type="button">Limpar marcação</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="room-generator__options">
+                  <section class="room-generator__item-editor" aria-labelledby="generator-item-editor-title">
+                    <header>
+                      <span id="generator-item-editor-title">Adicionar peça</span>
+                      <small id="generator-items-count">0 de 4</small>
+                    </header>
+
+                    <label for="generator-product">
+                      <span>Móvel</span>
+                      <select id="generator-product">
+                        <option value="">Selecione uma peça</option>
+                      </select>
+                    </label>
+
+                    <label for="generator-texture">
+                      <span>Textura ou acabamento</span>
+                      <select id="generator-texture">
+                        <option value="">Selecione um acabamento</option>
+                      </select>
+                    </label>
+
+                    <button id="generator-add-item" class="room-generator__add-item" type="button">Adicionar móvel ao projeto</button>
+                  </section>
+
+                  <div id="generator-items" class="room-generator__items" role="list" aria-label="Móveis adicionados ao projeto"></div>
+
+                  <label for="generator-quality">
+                    <span>Qualidade</span>
+                    <select id="generator-quality">
+                      <option value="draft">Rascunho — mais rápido</option>
+                      <option value="final">Final — mais detalhado</option>
+                    </select>
+                  </label>
+
+                  <label for="generator-instructions">
+                    <span>Orientações adicionais</span>
+                    <textarea id="generator-instructions" maxlength="600" rows="5" placeholder="Ex.: item 1 de frente para a TV; item 2 centralizado à frente do item 1."></textarea>
+                    <small class="room-generator__field-help">Use os números exibidos na imagem e na lista para indicar claramente a orientação de cada móvel.</small>
+                  </label>
+
+                  <label class="room-generator__consent" for="generator-consent">
+                    <input id="generator-consent" type="checkbox" required>
+                    <span>Confirmo que posso utilizar esta imagem e autorizo seu envio ao provedor de IA configurado pela HS.</span>
+                  </label>
+
+                  <button id="generator-submit" class="btn btn-dark" type="submit">Gerar ambientação</button>
+                  <p id="generator-status" class="room-generator__status" role="status" aria-live="polite"></p>
+                </div>
+              </div>
+            </form>
+
+            <section id="generator-result" class="room-generator__result hidden" aria-labelledby="generator-result-title">
+              <header>
+                <div>
+                  <span class="professional-eyebrow">Resultado</span>
+                  <h3 id="generator-result-title">Ambientação gerada</h3>
+                </div>
+                <a id="generator-download" class="btn btn-dark" href="#" target="_blank" rel="noopener noreferrer" download>Baixar imagem</a>
+              </header>
+              <p id="generator-demo-notice" class="room-generator__demo-notice hidden">Modo demonstração: o fluxo foi validado, mas nenhuma IA foi acionada.</p>
+              <img id="generator-result-image" alt="Resultado da ambientação gerada por inteligência artificial">
+              <p class="room-generator__disclaimer">Imagem ilustrativa gerada por IA. Confirme dimensões e especificações técnicas antes da execução do projeto.</p>
+            </section>
           </section>
         </div>
       </section>
